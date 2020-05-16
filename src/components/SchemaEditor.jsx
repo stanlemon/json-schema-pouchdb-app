@@ -5,7 +5,7 @@ import "ace-builds/src-noconflict/mode-json";
 import "ace-builds/src-noconflict/theme-twilight";
 import Form from "@rjsf/material-ui";
 import { Link, Grid, Button, TextField, Typography } from "@material-ui/core";
-import { Alert, AlertTitle } from "@material-ui/lab";
+import { Alert } from "@material-ui/lab";
 import { withRouter } from "react-router";
 import { Link as RouterLink } from "react-router-dom";
 import { Helmet } from "react-helmet";
@@ -146,10 +146,7 @@ export class SchemaEditor extends React.Component {
 
             {error && (
               <>
-                <Alert severity="error">
-                  <AlertTitle>Error</AlertTitle>
-                  {error}
-                </Alert>
+                <Alert severity="error">{error}</Alert>
                 <Spacer />
               </>
             )}
