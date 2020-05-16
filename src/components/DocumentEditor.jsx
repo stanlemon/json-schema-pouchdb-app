@@ -7,6 +7,7 @@ import Button from "@material-ui/core/Button";
 import Link from "@material-ui/core/Link";
 import Form from "@rjsf/material-ui";
 import Spacer from "./Spacer";
+import { withSnackbar } from "notistack";
 
 export class DocumentEditor extends React.Component {
   state = {
@@ -74,6 +75,8 @@ export class DocumentEditor extends React.Component {
       rows,
     });
 
+    this.props.enqueueSnackbar("Document saved.", { variant: "success" });
+
     this.setState({
       rev,
     });
@@ -113,4 +116,4 @@ export class DocumentEditor extends React.Component {
   }
 }
 
-export default withRouter(DocumentEditor);
+export default withRouter(withSnackbar(DocumentEditor));

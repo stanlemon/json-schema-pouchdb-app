@@ -2,6 +2,7 @@ import React from "react";
 import { hot } from "react-hot-loader/root";
 import loadable from "@loadable/component";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { SnackbarProvider } from "notistack";
 import { CssBaseline, Container } from "@material-ui/core";
 import PouchDB from "pouchdb-browser";
 import "typeface-roboto";
@@ -17,26 +18,31 @@ export class App extends React.Component {
   render() {
     return (
       <>
-        <CssBaseline>
-          <Container>
-            <Router>
-              <Switch>
-                <Route path="/document/:id" exact>
-                  <DocumentList db={this.db} />
-                </Route>
-                <Route path="/document/:schema/:document">
-                  <DocumentEditor db={this.db} />
-                </Route>
-                <Route path="/schema/:id" exact>
-                  <SchemaEditor db={this.db} />
-                </Route>
-                <Route path="/" exact>
-                  <SchemaList db={this.db} />
-                </Route>
-              </Switch>
-            </Router>
-          </Container>
-        </CssBaseline>
+        <SnackbarProvider
+          maxSnack={3}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        >
+          <CssBaseline>
+            <Container>
+              <Router>
+                <Switch>
+                  <Route path="/document/:id" exact>
+                    <DocumentList db={this.db} />
+                  </Route>
+                  <Route path="/document/:schema/:document">
+                    <DocumentEditor db={this.db} />
+                  </Route>
+                  <Route path="/schema/:id" exact>
+                    <SchemaEditor db={this.db} />
+                  </Route>
+                  <Route path="/" exact>
+                    <SchemaList db={this.db} />
+                  </Route>
+                </Switch>
+              </Router>
+            </Container>
+          </CssBaseline>
+        </SnackbarProvider>
       </>
     );
   }

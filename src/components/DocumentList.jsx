@@ -1,8 +1,10 @@
 import React from "react";
 import { withRouter } from "react-router";
 import { Link as RouterLink } from "react-router-dom";
+import { Helmet } from "react-helmet";
 import Typography from "@material-ui/core/Typography";
 import Link from "@material-ui/core/Link";
+import IconButton from "@material-ui/core/IconButton";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -10,7 +12,9 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
-import { Helmet } from "react-helmet";
+import DeleteIcon from "@material-ui/icons/Delete";
+import EditIcon from "@material-ui/icons/Edit";
+import { withSnackbar } from "notistack";
 import Spacer from "./Spacer";
 
 export class DocumentList extends React.Component {
@@ -45,6 +49,22 @@ export class DocumentList extends React.Component {
     }
   }
 
+  async deleteDocument(id) {
+    const rows = this.state.data.rows.filter((r) => r.id !== id);
+    const { rev } = await this.props.db.put({
+      _id: this.getId(),
+      _rev: this.state.rev,
+      ...this.state.data,
+      rows,
+    });
+
+    this.setState({ rev, data: { ...this.state.data, rows } });
+
+    this.props.enqueueSnackbar("Document deleted.", { variant: "error" });
+
+    console.log(rev);
+  }
+
   render() {
     const { loaded, schema, data } = this.state;
 
@@ -53,6 +73,13 @@ export class DocumentList extends React.Component {
     }
 
     const { rows } = data;
+
+    const columns = Object.entries(schema.schema.properties)
+      .filter((property) => property.type !== "object" && property !== "array")
+      .map(([key, property]) => ({
+        key,
+        label: property.title,
+      }));
 
     return (
       <>
@@ -71,18 +98,57 @@ export class DocumentList extends React.Component {
             <TableHead>
               <TableRow>
                 <TableCell></TableCell>
-                <TableCell>Id</TableCell>
+                {columns.map((column) => (
+                  <TableCell key={column.key}>{column.label}</TableCell>
+                ))}
+                <TableCell />
               </TableRow>
             </TableHead>
             <TableBody>
               {rows.map((row, i) => (
-                <TableRow key={row.id}>
-                  <TableCell align="right">{i + 1}</TableCell>
+                <TableRow hover={true} key={row.id}>
                   <TableCell
-                    component={RouterLink}
-                    to={`/document/${schema.id}/${row.id}`}
+                    align="right"
+                    onClick={() =>
+                      this.props.history.push(
+                        `/document/${schema.id}/${row.id}`
+                      )
+                    }
                   >
-                    {row.id}
+                    {i + 1}
+                  </TableCell>
+                  {columns.map((column) => (
+                    <TableCell
+                      key={`${row.id}-${column.key}`}
+                      onClick={() =>
+                        this.props.history.push(
+                          `/document/${schema.id}/${row.id}`
+                        )
+                      }
+                    >
+                      {row[column.key]}
+                    </TableCell>
+                  ))}
+                  <TableCell align="right">
+                    <IconButton
+                      edge="end"
+                      aria-label="edit"
+                      onClick={() =>
+                        this.props.history.push(
+                          `/document/${schema.id}/${row.id}`
+                        )
+                      }
+                    >
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton
+                      edge="end"
+                      aria-label="delete"
+                      onClick={async () => await this.deleteDocument(row.id)}
+                      color="secondary"
+                    >
+                      <DeleteIcon />
+                    </IconButton>
                   </TableCell>
                 </TableRow>
               ))}
@@ -94,4 +160,4 @@ export class DocumentList extends React.Component {
   }
 }
 
-export default withRouter(DocumentList);
+export default withRouter(withSnackbar(DocumentList));

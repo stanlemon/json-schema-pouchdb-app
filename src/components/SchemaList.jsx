@@ -22,6 +22,7 @@ import slugify from "slugify";
 import { v4 as uuidv4 } from "uuid";
 import Ajv from "ajv";
 import { Helmet } from "react-helmet";
+import { withSnackbar } from "notistack";
 import Spacer from "./Spacer";
 
 const sampleData = {
@@ -144,6 +145,8 @@ export class SchemaList extends React.Component {
       schemas,
     });
 
+    this.props.enqueueSnackbar("Schema deleted.", { variant: "error" });
+
     this.setState({
       schemas,
       rev: doc.rev,
@@ -167,6 +170,8 @@ export class SchemaList extends React.Component {
         rows: [...rows, row],
       });
 
+      this.props.history.push(`/document/${id}/${row.id}`);
+
       return doc;
     } catch (err) {
       if (err.status !== 404) {
@@ -179,6 +184,8 @@ export class SchemaList extends React.Component {
         _id: id,
         rows: [row],
       });
+
+      this.props.history.push(`/document/${id}/${row.id}`);
 
       return doc;
     }
@@ -227,6 +234,7 @@ export class SchemaList extends React.Component {
                   aria-label="edit"
                   component={Link}
                   to={`/schema/${schema.id}`}
+                  color="secondary"
                 >
                   <EditIcon />
                 </IconButton>
@@ -278,4 +286,4 @@ export class SchemaList extends React.Component {
   }
 }
 
-export default withRouter(SchemaList);
+export default withRouter(withSnackbar(SchemaList));
