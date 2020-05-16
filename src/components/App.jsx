@@ -8,6 +8,8 @@ import "typeface-roboto";
 import SchemaList from "./SchemaList";
 
 const SchemaEditor = loadable(() => import("./SchemaEditor"));
+const DocumentList = loadable(() => import("./DocumentList"));
+const DocumentEditor = loadable(() => import("./DocumentEditor"));
 
 export class App extends React.Component {
   db = new PouchDB("test");
@@ -19,10 +21,16 @@ export class App extends React.Component {
           <Container>
             <Router>
               <Switch>
-                <Route path="/schema/:id">
+                <Route path="/document/:id" exact>
+                  <DocumentList db={this.db} />
+                </Route>
+                <Route path="/document/:schema/:document">
+                  <DocumentEditor db={this.db} />
+                </Route>
+                <Route path="/schema/:id" exact>
                   <SchemaEditor db={this.db} />
                 </Route>
-                <Route path="/">
+                <Route path="/" exact>
                   <SchemaList db={this.db} />
                 </Route>
               </Switch>

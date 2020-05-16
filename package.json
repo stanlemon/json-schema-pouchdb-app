@@ -45,7 +45,8 @@
     "react-hot-loader": "^4.12.21",
     "react-router-dom": "^5.2.0",
     "slugify": "^1.4.0",
-    "typeface-roboto": "0.0.75"
+    "typeface-roboto": "0.0.75",
+    "uuid": "^8.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.9.6",

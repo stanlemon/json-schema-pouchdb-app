@@ -16,7 +16,11 @@ import {
 } from "@material-ui/core";
 import FolderIcon from "@material-ui/icons/Folder";
 import DeleteIcon from "@material-ui/icons/Delete";
+import EditIcon from "@material-ui/icons/Edit";
+import PostAddIcon from "@material-ui/icons/PostAdd";
 import slugify from "slugify";
+import { v4 as uuidv4 } from "uuid";
+import Ajv from "ajv";
 import { Helmet } from "react-helmet";
 import Spacer from "./Spacer";
 
@@ -33,6 +37,11 @@ const sampleData = {
     },
   },
 };
+
+const ajv = new Ajv({
+  removeAdditional: true,
+  useDefaults: "empty",
+});
 
 export class SchemaList extends React.Component {
   state = {
@@ -129,8 +138,6 @@ export class SchemaList extends React.Component {
     // Append the new schema
     const { [id]: deleted, ...schemas } = this.state.schemas;
 
-    console.log(id, deleted, schemas);
-
     const doc = await this.props.db.put({
       _id: "schemas",
       _rev: this.state.rev,
@@ -141,6 +148,40 @@ export class SchemaList extends React.Component {
       schemas,
       rev: doc.rev,
     });
+  };
+
+  createDocument = async (id) => {
+    const { schema } = this.state.schemas[id];
+
+    let data = {};
+    ajv.validate(schema, data); // Will fill in defaults
+
+    const row = { id: uuidv4(), ...data };
+
+    try {
+      const { _rev, rows } = await this.props.db.get(id);
+
+      const doc = await this.props.db.put({
+        _id: id,
+        _rev,
+        rows: [...rows, row],
+      });
+
+      return doc;
+    } catch (err) {
+      if (err.status !== 404) {
+        console.error(status);
+        return;
+      }
+
+      // Create a new document for our schema
+      const doc = await this.props.db.put({
+        _id: id,
+        rows: [row],
+      });
+
+      return doc;
+    }
   };
 
   render() {
@@ -164,7 +205,7 @@ export class SchemaList extends React.Component {
               button
               key={schema.id}
               component={Link}
-              to={`/schema/${schema.id}`}
+              to={`/document/${schema.id}`}
             >
               <ListItemAvatar>
                 <Avatar>
@@ -174,6 +215,21 @@ export class SchemaList extends React.Component {
               <ListItemText primary={schema.title} />
               <ListItemSecondaryAction>
                 {/* TODO: Fix this binding */}
+                <IconButton
+                  edge="end"
+                  aria-label="new"
+                  onClick={async () => await this.createDocument(schema.id)}
+                >
+                  <PostAddIcon />
+                </IconButton>
+                <IconButton
+                  edge="end"
+                  aria-label="edit"
+                  component={Link}
+                  to={`/schema/${schema.id}`}
+                >
+                  <EditIcon />
+                </IconButton>
                 <IconButton
                   edge="end"
                   aria-label="delete"
