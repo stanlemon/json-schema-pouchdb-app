@@ -6,8 +6,9 @@ import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import Link from "@material-ui/core/Link";
 import Form from "@rjsf/material-ui";
-import Spacer from "./Spacer";
 import { withSnackbar } from "notistack";
+import dayjs from "dayjs";
+import Spacer from "./Spacer";
 
 export class DocumentEditor extends React.Component {
   state = {
@@ -51,10 +52,16 @@ export class DocumentEditor extends React.Component {
   }
 
   onChange = ({ formData: data }) => {
-    this.setState({ data });
+    this.setState({ data: { ...this.state.data, ...data } });
   };
 
-  onSubmit = async ({ formData: data }) => {
+  onSubmit = async ({ formData }) => {
+    const data = {
+      ...this.state.data,
+      ...formData,
+      lastUpdated: dayjs().toISOString(),
+    };
+
     this.setState({ data });
 
     const documentId = this.getDocumentId();
@@ -62,7 +69,7 @@ export class DocumentEditor extends React.Component {
     const rows = [
       ...this.state.doc.rows.map((row) => {
         if (row.id === documentId) {
-          return this.state.data;
+          return data;
         }
         return row;
       }),
@@ -111,6 +118,11 @@ export class DocumentEditor extends React.Component {
             Save
           </Button>
         </Form>
+        <Spacer />
+        <div>
+          <div>Created: {data.created}</div>
+          <div>Last Updated: {data.lastUpdated}</div>
+        </div>
       </>
     );
   }

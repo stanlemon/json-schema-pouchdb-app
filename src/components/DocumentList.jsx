@@ -61,8 +61,6 @@ export class DocumentList extends React.Component {
     this.setState({ rev, data: { ...this.state.data, rows } });
 
     this.props.enqueueSnackbar("Document deleted.", { variant: "error" });
-
-    console.log(rev);
   }
 
   render() {

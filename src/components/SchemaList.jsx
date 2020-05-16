@@ -23,6 +23,7 @@ import { v4 as uuidv4 } from "uuid";
 import Ajv from "ajv";
 import { Helmet } from "react-helmet";
 import { withSnackbar } from "notistack";
+import dayjs from "dayjs";
 import Spacer from "./Spacer";
 
 const sampleData = {
@@ -159,7 +160,9 @@ export class SchemaList extends React.Component {
     let data = {};
     ajv.validate(schema, data); // Will fill in defaults
 
-    const row = { id: uuidv4(), ...data };
+    const now = dayjs().toISOString();
+
+    const row = { id: uuidv4(), ...data, created: now, lastUpdated: now };
 
     try {
       const { _rev, rows } = await this.props.db.get(id);
