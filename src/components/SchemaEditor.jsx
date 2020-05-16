@@ -5,6 +5,7 @@ import "ace-builds/src-noconflict/mode-json";
 import "ace-builds/src-noconflict/theme-twilight";
 import Form from "@rjsf/material-ui";
 import { Link, Grid, Button, TextField, Typography } from "@material-ui/core";
+import { Alert, AlertTitle } from "@material-ui/lab";
 import { withRouter } from "react-router";
 import { Link as RouterLink } from "react-router-dom";
 import { Helmet } from "react-helmet";
@@ -20,7 +21,7 @@ export class SchemaEditor extends React.Component {
     title: "",
     schema: {},
     value: this.stringify({}),
-    data: {},
+    error: null,
   };
 
   stringify(data) {
@@ -66,13 +67,17 @@ export class SchemaEditor extends React.Component {
       const schema = JSON.parse(value);
 
       if (!this.ajv.validateSchema(schema)) {
-        console.warn("Invalid schema");
+        this.setState({
+          error:
+            "Schema is currently invalid, it will not be saved until it has been fixed.",
+        });
         return;
       }
 
       // Only update the schema and save it if it is valid
       this.setState(
         {
+          error: null,
           schema: JSON.parse(value),
         },
         () => this.save()
@@ -103,7 +108,7 @@ export class SchemaEditor extends React.Component {
   };
 
   render() {
-    const { loaded, id, title, value, schema } = this.state;
+    const { loaded, title, value, schema, error } = this.state;
 
     if (!loaded) {
       return <div />;
@@ -138,6 +143,16 @@ export class SchemaEditor extends React.Component {
             </Grid>
 
             <Spacer />
+
+            {error && (
+              <>
+                <Alert severity="error">
+                  <AlertTitle>Error</AlertTitle>
+                  {error}
+                </Alert>
+                <Spacer />
+              </>
+            )}
 
             <AceEditor
               onChange={this.updateSchema}

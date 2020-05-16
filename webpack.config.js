@@ -8,7 +8,6 @@ module.exports = {
   },
   devServer: {
     hot: true,
-    //publicPath: "/",
     historyApiFallback: true,
   },
   module: {
