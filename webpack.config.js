@@ -3,8 +3,13 @@ const HtmlWebPackPlugin = require("html-webpack-plugin");
 module.exports = {
   mode: "development",
   devtool: "inline-source-map",
+  output: {
+    publicPath: "/",
+  },
   devServer: {
     hot: true,
+    //publicPath: "/",
+    historyApiFallback: true,
   },
   module: {
     rules: [
@@ -20,6 +25,17 @@ module.exports = {
             loader: "html-loader",
           },
         ],
+      },
+      {
+        test: /\.css$/i,
+        use: ["style-loader", "css-loader"],
+      },
+      {
+        test: /\.(png|jpg|gif|svg|eot|ttf|woff|woff2)$/,
+        loader: "url-loader",
+        options: {
+          limit: 10000,
+        },
       },
     ],
   },
