@@ -28,9 +28,10 @@ export class DocumentList extends React.Component {
   }
 
   async componentDidMount() {
+    const id = this.getId();
+    const { schemas } = await this.props.db.get("schemas");
+
     try {
-      const id = this.getId();
-      const { schemas } = await this.props.db.get("schemas");
       const { _rev: rev, _id, ...data } = await this.props.db.get(id);
 
       this.setState({
@@ -41,11 +42,22 @@ export class DocumentList extends React.Component {
       });
     } catch (err) {
       if (err.status !== 404) {
-        console.error(status);
-        return;
+        console.error(err);
       }
 
-      // Do something for a 404
+      const doc = await this.props.db.put({
+        _id: id,
+        rows: [],
+      });
+
+      this.setState({
+        loaded: true,
+        schema: schemas[id],
+        rev: doc.rev,
+        data: {
+          rows: [],
+        },
+      });
     }
   }
 
@@ -67,6 +79,7 @@ export class DocumentList extends React.Component {
     const { loaded, schema, data } = this.state;
 
     if (!loaded) {
+      console.log("never loaded");
       return <div />;
     }
 

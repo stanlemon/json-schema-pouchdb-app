@@ -102,7 +102,7 @@ export class SchemaList extends React.Component {
       this.setState({
         loaded: true,
         schemas: {},
-        rev: doc._rev,
+        rev: doc.rev,
       });
     }
   }
@@ -116,6 +116,10 @@ export class SchemaList extends React.Component {
   };
 
   createSchema = async () => {
+    if (!this.state.title) {
+      return;
+    }
+
     const id = slugify(this.state.title, { lower: true });
     // Append the new schema
     const schemas = {
@@ -125,8 +129,9 @@ export class SchemaList extends React.Component {
 
     const doc = await this.props.db.put({
       _id: "schemas",
-      _rev: this.state.rev,
       schemas,
+      // If we have a revision supply it (we won't for the very first schema)
+      ...(this.state.rev ? { _rev: this.state.rev } : {}),
     });
 
     this.setState({

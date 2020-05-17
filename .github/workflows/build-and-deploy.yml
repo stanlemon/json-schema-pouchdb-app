@@ -17,6 +17,8 @@ jobs:
         with:
           node-version: '12'
       - run: npm install
+        env:
+          PUBLIC_PATH: /json-schema-pouchdb-app/
       - run: npm run build
 
       - name: Deploy 🚀

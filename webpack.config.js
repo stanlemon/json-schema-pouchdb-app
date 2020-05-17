@@ -4,7 +4,7 @@ module.exports = {
   mode: "development",
   devtool: "inline-source-map",
   output: {
-    publicPath: "/",
+    publicPath: process.env.PUBLIC_PATH || "/",
   },
   devServer: {
     hot: true,
@@ -47,4 +47,21 @@ module.exports = {
       filename: "./index.html",
     }),
   ],
+  /*
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        default: false,
+        vendors: false,
+        // vendor chunk
+        react: {
+          // sync + async chunks
+          chunks: "all",
+          // import file path containing node_modules
+          test: /node_modules\/react/,
+        },
+      },
+    },
+  },
+  */
 };
