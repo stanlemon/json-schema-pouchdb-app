@@ -1,8 +1,10 @@
 const HtmlWebPackPlugin = require("html-webpack-plugin");
 
+const env = process.env.NODE_ENV;
+
 module.exports = {
-  mode: "development",
-  devtool: "inline-source-map",
+  mode: env || "development",
+  devtool: env === "production" ? "source-map" : "inline-source-map",
   output: {
     publicPath: process.env.PUBLIC_PATH || "/",
   },
