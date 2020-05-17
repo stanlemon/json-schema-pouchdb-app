@@ -79,7 +79,6 @@ export class DocumentList extends React.Component {
     const { loaded, schema, data } = this.state;
 
     if (!loaded) {
-      console.log("never loaded");
       return <div />;
     }
 

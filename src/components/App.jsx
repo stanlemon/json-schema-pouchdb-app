@@ -28,7 +28,7 @@ export class App extends React.Component {
         >
           <CssBaseline>
             <Container>
-              <Router>
+              <Router basename={PUBLIC_PATH}>
                 <Switch>
                   <Route path="/document/:id" exact>
                     <DocumentList db={this.db} />

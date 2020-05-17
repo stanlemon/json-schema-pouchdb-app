@@ -1,12 +1,15 @@
+const webpack = require("webpack");
+
 const HtmlWebPackPlugin = require("html-webpack-plugin");
 
 const env = process.env.NODE_ENV;
+const publicPath = process.env.PUBLIC_PATH || "/";
 
 module.exports = {
   mode: env || "development",
   devtool: env === "production" ? "source-map" : "inline-source-map",
   output: {
-    publicPath: process.env.PUBLIC_PATH || "/",
+    publicPath,
   },
   devServer: {
     hot: true,
@@ -47,6 +50,9 @@ module.exports = {
     new HtmlWebPackPlugin({
       template: "./index.html",
       filename: "./index.html",
+    }),
+    new webpack.DefinePlugin({
+      PUBLIC_PATH: JSON.stringify(publicPath),
     }),
   ],
   /*
