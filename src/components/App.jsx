@@ -1,6 +1,6 @@
 import React from "react";
 import { hot } from "react-hot-loader/root";
-//import loadable from "@loadable/component";
+import loadable from "@loadable/component";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import { SnackbarProvider } from "notistack";
 import Container from "@material-ui/core/Container";
@@ -8,13 +8,14 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import PouchDB from "pouchdb-browser";
 import "typeface-roboto";
 import SchemaList from "./SchemaList";
-import SchemaEditor from "./SchemaEditor";
 import DocumentList from "./DocumentList";
-import DocumentEditor from "./DocumentEditor";
 
-//const SchemaEditor = loadable(() => import("./SchemaEditor"));
-//const DocumentList = loadable(() => import("./DocumentList"));
-//const DocumentEditor = loadable(() => import("./DocumentEditor"));
+const SchemaEditor = loadable(() =>
+  import(/* webpackChunkName: "SchemaEditor" */ "./SchemaEditor")
+);
+const DocumentEditor = loadable(() =>
+  import(/* webpackChunkName: "DocumentEditor" */ "./DocumentEditor")
+);
 
 export class App extends React.Component {
   db = new PouchDB("test");
