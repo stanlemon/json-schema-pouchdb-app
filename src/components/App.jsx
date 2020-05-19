@@ -5,7 +5,7 @@ import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import { SnackbarProvider } from "notistack";
 import Container from "@material-ui/core/Container";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import PouchDB from "pouchdb-browser";
+import PouchDB from "pouchdb";
 import "typeface-roboto";
 import SchemaList from "./SchemaList";
 import DocumentList from "./DocumentList";

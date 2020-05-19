@@ -1,7 +1,6 @@
 {
   "presets": [
     "@babel/preset-react", 
-    "@babel/typescript", 
     ["@babel/preset-env", {
       "useBuiltIns": false,
       "shippedProposals": true
@@ -9,6 +8,8 @@
   ],
   "plugins": [
     "@babel/plugin-proposal-class-properties",
+    "@babel/plugin-proposal-optional-chaining",
+    "@babel/plugin-proposal-private-methods",
     "react-hot-loader/babel"
   ]
 }
