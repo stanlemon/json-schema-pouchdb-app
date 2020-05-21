@@ -1,5 +1,7 @@
 import PouchDB from "pouchdb";
+import dayjs from "dayjs";
 import slugify from "slugify";
+import { v4 as uuidv4 } from "uuid";
 
 const SCHEMAS_DOCUMENT_ID = "schemas";
 
@@ -85,6 +87,72 @@ export default class Database {
       }
       const rev = await this.#storeSchemas(null, {});
       return { rev, schemas: {} };
+    }
+  }
+
+  async createDocument(name, data = {}) {
+    const { rev, rows } = this.#fetchDocument(name);
+
+    const now = dayjs().toISOString();
+
+    const row = { id: uuidv4(), ...data, created: now, lastUpdated: now };
+
+    await this.#storeDocument(name, { rows: [...rows, ...row] });
+  }
+
+  async saveDocument(name, id, row) {
+    const { rows } = this.#fetchDocument(name);
+
+    await this.#storeDocument(
+      name,
+      rows.map((row) => {
+        if (r.id === id) {
+          return row;
+        } else {
+          return r;
+        }
+      })
+    );
+  }
+
+  async deleteDocument(name, id) {
+    const { rows, rev } = await this.#fetchDocuments();
+
+    await this.#storeDocuments(
+      name,
+      rev,
+      rows.filter((row) => row.id !== id)
+    );
+  }
+
+  async #storeDocuments(id, rev, rows) {
+    const doc = await this.#db.put({
+      _id: id,
+      _rev: rev,
+      rows,
+    });
+
+    return doc.rev;
+  }
+
+  async getDocument(name, id) {
+    return await this.getDocuments(name).filter((row) => row.id === id)?.[0];
+  }
+
+  async getDocuments(name) {
+    return await this.#fetchDocument(id);
+  }
+
+  async #fetchDocument(id) {
+    try {
+      const { rows, _rev: rev } = await this.#db.get(id);
+      return { rev, rows };
+    } catch (error) {
+      if (error.status !== 404) {
+        throw error;
+      }
+      const rev = await this.#storeDocument(rows);
+      return { rev, rows: [] };
     }
   }
 }
