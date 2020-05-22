@@ -91,19 +91,19 @@ export default class Database {
   }
 
   async createDocument(name, data = {}) {
-    const { rev, rows } = this.#fetchDocument(name);
+    const { rev, rows } = this.#fetchDocuments(name);
 
     const now = dayjs().toISOString();
 
     const row = { id: uuidv4(), ...data, created: now, lastUpdated: now };
 
-    await this.#storeDocument(name, { rows: [...rows, ...row] });
+    await this.#storeDocuments(name, { rows: [...rows, ...row] });
   }
 
   async saveDocument(name, id, row) {
-    const { rows } = this.#fetchDocument(name);
+    const { rows } = this.#fetchDocuments(name);
 
-    await this.#storeDocument(
+    await this.#storeDocuments(
       name,
       rows.map((row) => {
         if (r.id === id) {
@@ -140,10 +140,10 @@ export default class Database {
   }
 
   async getDocuments(name) {
-    return await this.#fetchDocument(id);
+    return await this.#fetchDocuments(id);
   }
 
-  async #fetchDocument(id) {
+  async #fetchDocuments(id) {
     try {
       const { rows, _rev: rev } = await this.#db.get(id);
       return { rev, rows };
@@ -151,7 +151,7 @@ export default class Database {
       if (error.status !== 404) {
         throw error;
       }
-      const rev = await this.#storeDocument(rows);
+      const rev = await this.#storeDocuments(rows);
       return { rev, rows: [] };
     }
   }
