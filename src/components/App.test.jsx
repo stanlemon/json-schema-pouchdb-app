@@ -1,27 +1,115 @@
 import React from "react";
 import { withRouter, MemoryRouter as Router } from "react-router-dom";
-import { render, cleanup, waitFor, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import "@testing-library/jest-dom/extend-expect";
 import PouchDB from "pouchdb";
 import App from "./App";
+import stringify from "../util/stringify";
+import { SAMPLE_DATA } from "../util/Database";
 
 PouchDB.plugin(require("pouchdb-adapter-memory"));
-
-afterEach(cleanup);
 
 test("e2e", async () => {
   // Helpful for debugging and seeing where we are at
   const LocationDisplay = withRouter(({ location }) => (
-    <div data-testid="location-display">{location.pathname}</div>
+    <div data-testid="location-pathname">{location.pathname}</div>
   ));
 
   const db = new PouchDB("test", { adapter: "memory" });
 
-  render(
+  const { debug, getByText, getByTestId, getByLabelText, findByText } = render(
     <Router initialEntries={["/"]}>
       <App db={db} />
       <LocationDisplay />
     </Router>
   );
 
-  await waitFor(() => screen.getByText("Schemas"));
+  // Wait until the component is loaded and the title says Schemas
+  await waitFor(() => getByText("Schemas"));
+
+  expect(await findByText("Schemas")).toBeInTheDocument();
+
+  const schemaName = "My Test Schema Name";
+  const schemaId = "my-test-schema-name";
+
+  // Enter our first schema's name
+  userEvent.type(getByTestId("create-schema-name"), schemaName);
+
+  // Click the save button
+  userEvent.click(getByTestId("create-schema-button"));
+
+  // Wait for the new schema to appear in the list
+  await waitFor(() => getByTestId("schema-" + schemaId));
+
+  userEvent.click(getByTestId("edit-schema-button-" + schemaId));
+
+  await waitFor(() => getByTestId("schema-name"));
+
+  // The editor has our sample data set in it.
+  expect(ace.edit("ace-editor").getValue()).toEqual(stringify(SAMPLE_DATA));
+
+  const schemaData = {
+    type: "object",
+    required: [...SAMPLE_DATA.required],
+    properties: {
+      ...SAMPLE_DATA.properties,
+      email: {
+        type: "string",
+        title: "Email Address",
+      },
+      isArchived: {
+        type: "boolean",
+        title: "Is Archived?",
+      },
+    },
+  };
+
+  ace.edit("ace-editor").setValue(stringify(schemaData));
+
+  // Note, the state is probably not finished being updated when this appears
+  await waitFor(() => getByText("Is Archived?"));
+
+  // Navigate back to the schema list
+  userEvent.click(getByTestId("return-to-schema-list"));
+
+  expect(await findByText("Schemas")).toBeInTheDocument();
+
+  userEvent.click(getByTestId("create-document-button-" + schemaId));
+
+  // Wait for the page to navigate to the document editor
+  await waitFor(() => {
+    expect(getByTestId("location-pathname")).toContainHTML(
+      "/document/" + schemaId + "/" // The UUID comes after this
+    );
+  });
+
+  expect(await findByText(schemaName)).toBeInTheDocument();
+
+  // Find the form
+  await waitFor(() => {
+    expect(
+      getByText((content, element) => {
+        return element.tagName.toLowerCase() === "form";
+      })
+    ).toBeInTheDocument();
+  });
+
+  // Fill it in
+  const firstName = getByLabelText(/First Name/);
+  await userEvent.type(firstName, "Stan");
+  expect(firstName).toHaveAttribute("value", "Stan");
+
+  const lastName = getByLabelText(/Last Name/);
+  await userEvent.type(lastName, "Lemon");
+  expect(lastName).toHaveAttribute("value", "Lemon");
+
+  userEvent.click(getByTestId("document-save-button"));
+
+  // A 'snack' (aka) toast indicating we saved the document
+  waitFor(() => {
+    expect(findByText("Document saved.")).toBeInTheDocument();
+  });
+
+  //debug();
 });

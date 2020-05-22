@@ -14,6 +14,7 @@ import { withRouter } from "react-router";
 import { Link as RouterLink } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import Spacer from "./Spacer";
+import stringify from "../util/stringify";
 
 export class SchemaEditor extends React.Component {
   ajv = new Ajv();
@@ -24,13 +25,9 @@ export class SchemaEditor extends React.Component {
     schemas: {}, // All of the schemas, needed for saves
     title: "",
     schema: {},
-    value: this.stringify({}),
+    value: stringify({}),
     error: null,
   };
-
-  stringify(data) {
-    return JSON.stringify(data, null, "  ");
-  }
 
   getId() {
     const { id } = this.props.match.params;
@@ -48,7 +45,7 @@ export class SchemaEditor extends React.Component {
       schemas,
       title,
       schema,
-      value: this.stringify(schema),
+      value: stringify(schema),
     });
   }
 
@@ -63,9 +60,14 @@ export class SchemaEditor extends React.Component {
     );
   };
 
-  updateSchema = (value) => {
+  updateSchema = (value, x, y) => {
     // Update the value even if there are syntax errors
     this.setState({ value });
+
+    // If the editor has been cleared skip trying to parse and validate it
+    if (value.trim() === "") {
+      return;
+    }
 
     try {
       const schema = JSON.parse(value);
@@ -170,7 +172,7 @@ export class SchemaEditor extends React.Component {
             <Spacer />
           </Grid>
           <Grid item xs>
-            <Form schema={schema} data-testid="schema-preview">
+            <Form disabled={true} schema={schema} data-testid="schema-preview">
               <Button
                 variant="contained"
                 color="primary"

@@ -166,7 +166,8 @@ export default class Database {
   }
 }
 
-const SAMPLE_DATA = {
+export const SAMPLE_DATA = {
+  type: "object",
   required: ["firstName", "lastName"],
   properties: {
     firstName: {

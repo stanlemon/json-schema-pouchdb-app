@@ -25,6 +25,7 @@ import dayjs from "dayjs";
 import Spacer from "./Spacer";
 
 const sampleData = {
+  type: "object",
   required: ["firstName", "lastName"],
   properties: {
     firstName: {
@@ -272,7 +273,9 @@ export class SchemaList extends React.Component {
               value={title}
               size="small"
               variant="outlined"
-              data-testid="create-schema-name"
+              inputProps={{
+                "data-testid": "create-schema-name",
+              }}
             />
           </Grid>
           <Grid item xs={3}>
