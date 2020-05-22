@@ -104,7 +104,7 @@ export class DocumentList extends React.Component {
         </Link>
         <Spacer />
         <TableContainer component={Paper}>
-          <Table size="small">
+          <Table size="small" data-testid="document-list">
             <TableHead>
               <TableRow>
                 <TableCell></TableCell>
@@ -114,7 +114,7 @@ export class DocumentList extends React.Component {
                 <TableCell />
               </TableRow>
             </TableHead>
-            <TableBody>
+            <TableBody data-testid="document-list-rows">
               {rows.map((row, i) => (
                 <TableRow
                   hover={true}

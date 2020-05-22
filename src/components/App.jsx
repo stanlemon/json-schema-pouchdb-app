@@ -20,6 +20,8 @@ export function App({ db }) {
   return (
     <SnackbarProvider
       maxSnack={3}
+      autoHideDuration={3000}
+      disableWindowBlurListener={true}
       anchorOrigin={{ vertical: "top", horizontal: "center" }}
     >
       <CssBaseline>

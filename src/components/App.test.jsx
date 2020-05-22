@@ -1,6 +1,11 @@
 import React from "react";
 import { withRouter, MemoryRouter as Router } from "react-router-dom";
-import { render, screen, waitFor } from "@testing-library/react";
+import {
+  render,
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom/extend-expect";
 import PouchDB from "pouchdb";
@@ -78,10 +83,12 @@ test("e2e", async () => {
   userEvent.click(getByTestId("create-document-button-" + schemaId));
 
   // Wait for the page to navigate to the document editor
-  await waitFor(() => {
+  const documentId = await waitFor(() => {
     expect(getByTestId("location-pathname")).toContainHTML(
       "/document/" + schemaId + "/" // The UUID comes after this
     );
+    const location = getByTestId("location-pathname").innerHTML.trim();
+    return location.replace("/document/" + schemaId + "/", "");
   });
 
   expect(await findByText(schemaName)).toBeInTheDocument();
@@ -107,9 +114,52 @@ test("e2e", async () => {
   userEvent.click(getByTestId("document-save-button"));
 
   // A 'snack' (aka) toast indicating we saved the document
-  waitFor(() => {
-    expect(findByText("Document saved.")).toBeInTheDocument();
+  await waitFor(async () => {
+    expect(await findByText("Document saved.")).toBeInTheDocument();
   });
 
-  //debug();
+  userEvent.click(getByTestId("return-to-document-list"));
+
+  await waitFor(async () => {
+    expect(await findByText(schemaName)).toBeInTheDocument();
+  });
+
+  userEvent.click(getByTestId(`edit-document-button-${documentId}`));
+
+  await waitFor(() => {
+    expect(
+      getByText((content, element) => {
+        return element.tagName.toLowerCase() === "form";
+      })
+    ).toBeInTheDocument();
+  });
+
+  // Change the first name field
+  userEvent.clear(getByLabelText(/First Name/));
+  await userEvent.type(getByLabelText(/First Name/), "Stanley");
+  expect(getByLabelText(/First Name/)).toHaveAttribute("value", "Stanley", {
+    allAtOnce: true,
+  });
+
+  userEvent.click(getByTestId("document-save-button"));
+
+  // A 'snack' (aka) toast indicating we saved the document
+  await waitFor(async () => {
+    expect(await findByText("Document saved.")).toBeInTheDocument();
+  });
+
+  userEvent.click(getByTestId("return-to-document-list"));
+
+  await waitFor(() => {
+    expect(getByTestId("document-list")).toBeInTheDocument();
+  });
+
+  expect(getByTestId(`document-${documentId}`)).toBeInTheDocument();
+
+  userEvent.click(getByTestId(`delete-document-button-${documentId}`));
+
+  await waitForElementToBeRemoved(getByTestId(`document-${documentId}`));
+
+  // All the rows have been removed
+  expect((await getByTestId("document-list-rows")).childNodes).toHaveLength(0);
 });
