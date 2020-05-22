@@ -126,7 +126,7 @@ export class SchemaEditor extends React.Component {
         <Typography variant="h3" component="h1">
           Edit {title}
         </Typography>
-        <Link component={RouterLink} to="/">
+        <Link component={RouterLink} to="/" data-testid="return-to-schema-list">
           Return to Schema List
         </Link>
         <Spacer />
@@ -142,6 +142,7 @@ export class SchemaEditor extends React.Component {
                   value={title}
                   size="small"
                   variant="outlined"
+                  data-testid="schema-name"
                 />
               </Grid>
             </Grid>
@@ -150,7 +151,9 @@ export class SchemaEditor extends React.Component {
 
             {error && (
               <>
-                <Alert severity="error">{error}</Alert>
+                <Alert severity="error" data-testid="schema-error">
+                  {error}
+                </Alert>
                 <Spacer />
               </>
             )}
@@ -161,13 +164,18 @@ export class SchemaEditor extends React.Component {
               width="100%"
               mode="json"
               theme="twilight"
+              data-testid="schema-editor"
             />
 
             <Spacer />
           </Grid>
           <Grid item xs>
-            <Form schema={schema}>
-              <Button variant="contained" color="primary">
+            <Form schema={schema} data-testid="schema-preview">
+              <Button
+                variant="contained"
+                color="primary"
+                data-testid="save-schema-button"
+              >
                 Submit
               </Button>
             </Form>

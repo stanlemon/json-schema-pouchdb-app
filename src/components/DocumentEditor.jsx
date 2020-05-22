@@ -104,7 +104,11 @@ export class DocumentEditor extends React.Component {
         <Typography variant="h3" component="h1">
           {schema.title}
         </Typography>
-        <Link component={RouterLink} to={`/document/${schema.id}`}>
+        <Link
+          component={RouterLink}
+          to={`/document/${schema.id}`}
+          data-testid="return-to-document-list"
+        >
           Return to Document List
         </Link>
         <Spacer />
@@ -113,8 +117,14 @@ export class DocumentEditor extends React.Component {
           formData={data}
           onChange={this.onChange}
           onSubmit={this.onSubmit}
+          data-testid="document-form"
         >
-          <Button type="submit" variant="contained" color="primary">
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            data-testid="document-save-button"
+          >
             Save
           </Button>
         </Form>

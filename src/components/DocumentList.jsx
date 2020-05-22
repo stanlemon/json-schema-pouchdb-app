@@ -99,7 +99,7 @@ export class DocumentList extends React.Component {
         <Typography variant="h3" component="h1">
           {schema.title}
         </Typography>
-        <Link component={RouterLink} to="/">
+        <Link component={RouterLink} to="/" data-testid="return-to-schema-list">
           Return to Schema List
         </Link>
         <Spacer />
@@ -116,7 +116,11 @@ export class DocumentList extends React.Component {
             </TableHead>
             <TableBody>
               {rows.map((row, i) => (
-                <TableRow hover={true} key={row.id}>
+                <TableRow
+                  hover={true}
+                  key={row.id}
+                  data-testid={`document-${row.id}`}
+                >
                   <TableCell
                     align="right"
                     onClick={() =>
@@ -148,6 +152,7 @@ export class DocumentList extends React.Component {
                           `/document/${schema.id}/${row.id}`
                         )
                       }
+                      data-testid={`edit-document-button-${row.id}`}
                     >
                       <EditIcon />
                     </IconButton>
@@ -156,6 +161,7 @@ export class DocumentList extends React.Component {
                       aria-label="delete"
                       onClick={async () => await this.deleteDocument(row.id)}
                       color="secondary"
+                      data-testid={`delete-document-button-${row.id}`}
                     >
                       <DeleteIcon />
                     </IconButton>

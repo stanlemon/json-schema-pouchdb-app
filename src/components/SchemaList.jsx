@@ -219,19 +219,24 @@ export class SchemaList extends React.Component {
               key={schema.id}
               component={Link}
               to={`/document/${schema.id}`}
+              data-testid={`schema-${schema.id}`}
             >
               <ListItemAvatar>
                 <Avatar>
                   <FolderIcon />
                 </Avatar>
               </ListItemAvatar>
-              <ListItemText primary={schema.title} />
+              <ListItemText
+                primary={schema.title}
+                data-testid={`document-list-${schema.id}`}
+              />
               <ListItemSecondaryAction>
                 {/* TODO: Fix this binding */}
                 <IconButton
                   edge="end"
                   aria-label="new"
                   onClick={async () => await this.createDocument(schema.id)}
+                  data-testid={`create-document-button-${schema.id}`}
                 >
                   <PostAddIcon />
                 </IconButton>
@@ -241,6 +246,7 @@ export class SchemaList extends React.Component {
                   component={Link}
                   to={`/schema/${schema.id}`}
                   color="secondary"
+                  data-testid={`edit-schema-button-${schema.id}`}
                 >
                   <EditIcon />
                 </IconButton>
@@ -248,6 +254,7 @@ export class SchemaList extends React.Component {
                   edge="end"
                   aria-label="delete"
                   onClick={async () => await this.deleteSchema(schema.id)}
+                  data-testid={`delete-schema-button-${schema.id}`}
                 >
                   <DeleteIcon />
                 </IconButton>
@@ -265,6 +272,7 @@ export class SchemaList extends React.Component {
               value={title}
               size="small"
               variant="outlined"
+              data-testid="create-schema-name"
             />
           </Grid>
           <Grid item xs={3}>
@@ -273,6 +281,7 @@ export class SchemaList extends React.Component {
               variant="contained"
               color="primary"
               onClick={this.createSchema}
+              data-testid="create-schema-button"
             >
               Save
             </Button>
@@ -284,6 +293,7 @@ export class SchemaList extends React.Component {
           color="secondary"
           startIcon={<DeleteIcon />}
           onClick={this.reset}
+          data-testid="reset-all-schemas"
         >
           Reset All Schemas
         </Button>
