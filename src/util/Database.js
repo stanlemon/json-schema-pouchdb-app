@@ -91,23 +91,26 @@ export default class Database {
   }
 
   async createDocument(name, data = {}) {
-    const { rev, rows } = this.#fetchDocuments(name);
+    const { rev, rows } = await this.#fetchDocuments(name);
 
     const now = dayjs().toISOString();
 
     const row = { id: uuidv4(), ...data, created: now, lastUpdated: now };
 
-    await this.#storeDocuments(name, { rows: [...rows, ...row] });
+    await this.#storeDocuments(name, rev, [...rows, row]);
+
+    return row.id;
   }
 
   async saveDocument(name, id, row) {
-    const { rows } = this.#fetchDocuments(name);
+    const { rows, rev } = await this.#fetchDocuments(name);
 
     await this.#storeDocuments(
       name,
-      rows.map((row) => {
+      rev,
+      rows.map((r) => {
         if (r.id === id) {
-          return row;
+          return { ...row, id, created: r.created };
         } else {
           return r;
         }
@@ -116,7 +119,7 @@ export default class Database {
   }
 
   async deleteDocument(name, id) {
-    const { rows, rev } = await this.#fetchDocuments();
+    const { rows, rev } = await this.#fetchDocuments(name);
 
     await this.#storeDocuments(
       name,
@@ -136,11 +139,16 @@ export default class Database {
   }
 
   async getDocument(name, id) {
-    return await this.getDocuments(name).filter((row) => row.id === id)?.[0];
+    const rows = (await this.getDocuments(name)).filter((row) => row.id === id);
+    return rows.shift() ?? null; // In case undefined is returned, we explicitly return null;
   }
 
   async getDocuments(name) {
-    return await this.#fetchDocuments(id);
+    const { rows } = await this.#fetchDocuments(name);
+    if (!Array.isArray(rows)) {
+      return [];
+    }
+    return rows;
   }
 
   async #fetchDocuments(id) {
@@ -151,7 +159,8 @@ export default class Database {
       if (error.status !== 404) {
         throw error;
       }
-      const rev = await this.#storeDocuments(rows);
+
+      const rev = await this.#storeDocuments(id, null, []);
       return { rev, rows: [] };
     }
   }
