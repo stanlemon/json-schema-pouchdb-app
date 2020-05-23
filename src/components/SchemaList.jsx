@@ -16,15 +16,9 @@ import FolderIcon from "@material-ui/icons/Folder";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import PostAddIcon from "@material-ui/icons/PostAdd";
-import Ajv from "ajv";
 import { Helmet } from "react-helmet";
 import { withSnackbar } from "notistack";
 import Spacer from "./Spacer";
-
-const ajv = new Ajv({
-  removeAdditional: true,
-  useDefaults: "empty",
-});
 
 export class SchemaList extends React.Component {
   state = {

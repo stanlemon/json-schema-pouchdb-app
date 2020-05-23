@@ -1,5 +1,4 @@
 import React from "react";
-import Ajv from "ajv";
 import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/mode-json";
 import "ace-builds/src-noconflict/theme-twilight";
@@ -17,8 +16,6 @@ import Spacer from "./Spacer";
 import stringify from "../util/stringify";
 
 export class SchemaEditor extends React.Component {
-  ajv = new Ajv();
-
   state = {
     loaded: false,
     title: "",
@@ -61,21 +58,13 @@ export class SchemaEditor extends React.Component {
     try {
       const schema = JSON.parse(value);
 
-      if (!this.ajv.validateSchema(schema)) {
-        this.setState({
-          error:
-            "Schema is currently invalid, it will not be saved until it has been fixed.",
-        });
-        return;
-      }
-
       await this.save();
 
       // Only update the schema and save it if it is valid
       this.setState(
         {
           error: null,
-          schema: JSON.parse(value),
+          schema,
         },
         () => this.save()
       );

@@ -48,7 +48,6 @@
     "@rjsf/core": "^2.0.1",
     "@rjsf/material-ui": "^2.0.1",
     "ace-builds": "^1.4.11",
-    "ajv": "^6.12.2",
     "dayjs": "^1.8.27",
     "notistack": "^0.9.16",
     "pouchdb": "^7.2.1",
