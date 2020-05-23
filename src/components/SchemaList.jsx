@@ -213,7 +213,7 @@ export class SchemaList extends React.Component {
         <Typography variant="h3" component="h1">
           Schemas
         </Typography>
-        <List>
+        <List data-testid="schema-list">
           {Object.values(schemas).map((schema) => (
             <ListItem
               button

@@ -2,7 +2,6 @@ import React from "react";
 import { withRouter, MemoryRouter as Router } from "react-router-dom";
 import {
   render,
-  screen,
   waitFor,
   waitForElementToBeRemoved,
 } from "@testing-library/react";
@@ -38,7 +37,8 @@ test("e2e", async () => {
   const schemaName = "My Test Schema Name";
   const schemaId = "my-test-schema-name";
 
-  // Enter our first schema's name
+  // Create our first schema
+  // Fill in the schema name
   userEvent.type(getByTestId("create-schema-name"), schemaName);
 
   // Click the save button
@@ -47,7 +47,8 @@ test("e2e", async () => {
   // Wait for the new schema to appear in the list
   await waitFor(() => getByTestId("schema-" + schemaId));
 
-  userEvent.click(getByTestId("edit-schema-button-" + schemaId));
+  // Click on the edit button for the new schema
+  userEvent.click(getByTestId(`edit-schema-button-${schemaId}`));
 
   await waitFor(() => getByTestId("schema-name"));
 
@@ -70,9 +71,11 @@ test("e2e", async () => {
     },
   };
 
+  // Change the value of the schema
   ace.edit("ace-editor").setValue(stringify(schemaData));
 
-  // Note, the state is probably not finished being updated when this appears
+  // Wait for the schema to be saved, check for the form to update it's preview
+  // Note: The state is probably not finished being updated when this appears
   await waitFor(() => getByText("Is Archived?"));
 
   // Navigate back to the schema list
@@ -80,6 +83,7 @@ test("e2e", async () => {
 
   expect(await findByText("Schemas")).toBeInTheDocument();
 
+  // Click the button to create a new document for the schema we just made
   userEvent.click(getByTestId("create-document-button-" + schemaId));
 
   // Wait for the page to navigate to the document editor
@@ -93,7 +97,7 @@ test("e2e", async () => {
 
   expect(await findByText(schemaName)).toBeInTheDocument();
 
-  // Find the form
+  // Find the form for our document
   await waitFor(() => {
     expect(
       getByText((content, element) => {
@@ -102,7 +106,7 @@ test("e2e", async () => {
     ).toBeInTheDocument();
   });
 
-  // Fill it in
+  // Fill in the properties of our schema
   const firstName = getByLabelText(/First Name/);
   await userEvent.type(firstName, "Stan");
   expect(firstName).toHaveAttribute("value", "Stan");
@@ -111,6 +115,7 @@ test("e2e", async () => {
   await userEvent.type(lastName, "Lemon");
   expect(lastName).toHaveAttribute("value", "Lemon");
 
+  // Click the button to save the schema
   userEvent.click(getByTestId("document-save-button"));
 
   // A 'snack' (aka) toast indicating we saved the document
@@ -118,12 +123,14 @@ test("e2e", async () => {
     expect(await findByText("Document saved.")).toBeInTheDocument();
   });
 
+  // Click the link to return to our list of documents
   userEvent.click(getByTestId("return-to-document-list"));
 
   await waitFor(async () => {
     expect(await findByText(schemaName)).toBeInTheDocument();
   });
 
+  // Click to edit the document we just created
   userEvent.click(getByTestId(`edit-document-button-${documentId}`));
 
   await waitFor(() => {
@@ -134,13 +141,14 @@ test("e2e", async () => {
     ).toBeInTheDocument();
   });
 
-  // Change the first name field
+  // Change the first name field of our document
   userEvent.clear(getByLabelText(/First Name/));
   await userEvent.type(getByLabelText(/First Name/), "Stanley");
   expect(getByLabelText(/First Name/)).toHaveAttribute("value", "Stanley", {
     allAtOnce: true,
   });
 
+  // Click the button to save our document
   userEvent.click(getByTestId("document-save-button"));
 
   // A 'snack' (aka) toast indicating we saved the document
@@ -148,6 +156,7 @@ test("e2e", async () => {
     expect(await findByText("Document saved.")).toBeInTheDocument();
   });
 
+  // Return to the document list
   userEvent.click(getByTestId("return-to-document-list"));
 
   await waitFor(() => {
@@ -156,10 +165,28 @@ test("e2e", async () => {
 
   expect(getByTestId(`document-${documentId}`)).toBeInTheDocument();
 
+  // Click the delete button to remove our document
   userEvent.click(getByTestId(`delete-document-button-${documentId}`));
-
   await waitForElementToBeRemoved(getByTestId(`document-${documentId}`));
 
   // All the rows have been removed
-  expect((await getByTestId("document-list-rows")).childNodes).toHaveLength(0);
+  expect(getByTestId("document-list-rows").childNodes).toHaveLength(0);
+
+  // Return to the schema list
+  userEvent.click(getByTestId("return-to-schema-list"));
+
+  await waitFor(() => {
+    expect(getByTestId("schema-list")).toBeInTheDocument();
+  });
+
+  // Make sure our schema is present
+  expect(getByTestId(`schema-${schemaId}`)).toBeInTheDocument();
+
+  // Delete our schema
+  userEvent.click(getByTestId(`delete-schema-button-${schemaId}`));
+
+  await waitForElementToBeRemoved(getByTestId(`schema-${schemaId}`));
+
+  // Verify we have no schemas left
+  expect(getByTestId("schema-list").childNodes).toHaveLength(0);
 });
