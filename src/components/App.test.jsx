@@ -8,6 +8,7 @@ import {
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom/extend-expect";
 import PouchDB from "pouchdb";
+import Database from "../util/Database";
 import App from "./App";
 import stringify from "../util/stringify";
 import { SAMPLE_DATA } from "../util/Database";
@@ -20,9 +21,9 @@ test("e2e", async () => {
     <div data-testid="location-pathname">{location.pathname}</div>
   ));
 
-  const db = new PouchDB("test", { adapter: "memory" });
+  const db = new Database(new PouchDB("test", { adapter: "memory" }));
 
-  const { debug, getByText, getByTestId, getByLabelText, findByText } = render(
+  const { getByText, getByTestId, getByLabelText, findByText } = render(
     <Router initialEntries={["/"]}>
       <App db={db} />
       <LocationDisplay />

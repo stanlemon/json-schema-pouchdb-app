@@ -18,15 +18,7 @@ describe("database operations", () => {
   // Clear out all documents after each test
   afterEach(async () => {
     try {
-      const allDocs = await pouchDb.allDocs();
-
-      await pouchDb.bulkDocs(
-        allDocs.rows.map((row) => ({
-          _id: row.id,
-          _rev: row.value.rev,
-          _deleted: true,
-        }))
-      );
+      await db.reset();
     } catch (error) {
       console.error(error);
     }

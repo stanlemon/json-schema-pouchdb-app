@@ -7,7 +7,6 @@ import Button from "@material-ui/core/Button";
 import Link from "@material-ui/core/Link";
 import Form from "@rjsf/material-ui";
 import { withSnackbar } from "notistack";
-import dayjs from "dayjs";
 import Spacer from "./Spacer";
 
 export class DocumentEditor extends React.Component {
@@ -30,24 +29,17 @@ export class DocumentEditor extends React.Component {
       const schemaId = this.getSchemaId();
       const documentId = this.getDocumentId();
 
-      const { schemas } = await this.props.db.get("schemas");
-      const doc = await this.props.db.get(schemaId);
-      const data = doc.rows.filter((row) => row.id === documentId)[0];
+      const schema = await this.props.db.getSchema(schemaId);
+      const data = await this.props.db.getDocument(schemaId, documentId);
 
       this.setState({
         loaded: true,
-        schema: schemas[schemaId],
-        rev: doc._rev,
+        schema,
         data,
-        doc,
       });
-    } catch (err) {
-      if (err.status !== 404) {
-        console.error(err);
-        return;
-      }
-
-      // Do something for a 404
+    } catch (error) {
+      console.error(error);
+      return;
     }
   }
 
@@ -56,37 +48,21 @@ export class DocumentEditor extends React.Component {
   };
 
   onSubmit = async ({ formData }) => {
-    const data = {
-      ...this.state.data,
-      ...formData,
-      lastUpdated: dayjs().toISOString(),
-    };
+    try {
+      const data = await this.props.db.saveDocument(
+        this.getSchemaId(),
+        this.getDocumentId(),
+        formData
+      );
 
-    this.setState({ data });
+      this.setState({ data });
 
-    const documentId = this.getDocumentId();
-
-    const rows = [
-      ...this.state.doc.rows.map((row) => {
-        if (row.id === documentId) {
-          return data;
-        }
-        return row;
-      }),
-    ];
-
-    const { rev } = await this.props.db.put({
-      ...this.state.doc,
-      _id: this.getSchemaId(),
-      _rev: this.state.rev,
-      rows,
-    });
-
-    this.props.enqueueSnackbar("Document saved.", { variant: "success" });
-
-    this.setState({
-      rev,
-    });
+      this.props.enqueueSnackbar("Document saved.", {
+        variant: "success",
+      });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   render() {

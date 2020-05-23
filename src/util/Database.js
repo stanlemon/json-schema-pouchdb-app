@@ -11,16 +11,40 @@ export default class Database {
    */
   #db;
 
-  constructor(db) {
+  /**
+   * @param {PouchDB} db
+   */
+  constructor(db = null) {
+    if (!db) {
+      db = new PouchDB("local");
+    }
     this.#db = db;
   }
 
   async reset() {
     const { schemas, rev } = await this.#fetchSchemas();
 
+    // Clear all of our schemas
     await this.#storeSchemas(rev, {});
+
+    const documentIds = Object.keys(schemas);
+
+    const allDocs = await this.#db.allDocs();
+
+    await this.#db.bulkDocs(
+      allDocs.rows
+        // Reduce to only the documents we had schemas for
+        .filter((row) => documentIds.includes(row.id))
+        // Construct our deletion entries
+        .map((row) => ({
+          _id: row.id,
+          _rev: row.value.rev,
+          _deleted: true,
+        }))
+    );
   }
 
+  // TODO: Validate schema
   async createSchema(title, schema = SAMPLE_DATA) {
     if (!title || !schema) {
       throw new Error(
@@ -38,6 +62,7 @@ export default class Database {
     });
   }
 
+  // TODO: Validate schema
   async saveSchema(id, title, schema) {
     const { schemas, rev } = await this.#fetchSchemas();
 
@@ -95,7 +120,12 @@ export default class Database {
 
     const now = dayjs().toISOString();
 
-    const row = { id: uuidv4(), ...data, created: now, lastUpdated: now };
+    const row = {
+      id: uuidv4(),
+      ...data,
+      created: now,
+      lastUpdated: now,
+    };
 
     await this.#storeDocuments(name, rev, [...rows, row]);
 
@@ -105,17 +135,23 @@ export default class Database {
   async saveDocument(name, id, row) {
     const { rows, rev } = await this.#fetchDocuments(name);
 
+    const now = dayjs().toISOString();
+    let data;
+
     await this.#storeDocuments(
       name,
       rev,
       rows.map((r) => {
         if (r.id === id) {
-          return { ...row, id, created: r.created };
+          // Retain the documents id and created data, bump last updated
+          data = { ...row, id, created: r.created, lastUpdated: now };
+          return data;
         } else {
           return r;
         }
       })
     );
+    return data;
   }
 
   async deleteDocument(name, id) {

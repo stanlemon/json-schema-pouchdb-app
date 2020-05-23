@@ -29,62 +29,40 @@ export class DocumentList extends React.Component {
 
   async componentDidMount() {
     const id = this.getId();
-    const { schemas } = await this.props.db.get("schemas");
 
     try {
-      const { _rev: rev, _id, ...data } = await this.props.db.get(id);
+      const schema = await this.props.db.getSchema(id);
+      const data = await this.props.db.getDocuments(id);
 
       this.setState({
         loaded: true,
-        schema: schemas[id],
-        rev,
+        schema,
         data,
       });
-    } catch (err) {
-      if (err.status !== 404) {
-        console.error(err);
-      }
-
-      const doc = await this.props.db.put({
-        _id: id,
-        rows: [],
-      });
-
-      this.setState({
-        loaded: true,
-        schema: schemas[id],
-        rev: doc.rev,
-        data: {
-          rows: [],
-        },
-      });
+    } catch (error) {
+      console.error(error);
     }
   }
 
   async deleteDocument(id) {
-    const rows = this.state.data.rows.filter((r) => r.id !== id);
-    const { rev } = await this.props.db.put({
-      _id: this.getId(),
-      _rev: this.state.rev,
-      ...this.state.data,
-      rows,
-    });
-
-    this.setState({ rev, data: { ...this.state.data, rows } });
-
-    this.props.enqueueSnackbar("Document deleted.", { variant: "error" });
+    try {
+      await this.props.db.deleteDocument(this.getId(), id);
+      const data = await this.props.db.getDocuments(this.getId());
+      this.setState({ data });
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   render() {
-    const { loaded, schema, data } = this.state;
+    const { loaded, data: rows } = this.state;
 
     if (!loaded) {
       return <div />;
     }
+    const { id: schemaId, schema, title } = this.state.schema;
 
-    const { rows } = data;
-
-    const columns = Object.entries(schema.schema.properties)
+    const columns = Object.entries(schema.properties)
       .filter((property) => property.type !== "object" && property !== "array")
       .map(([key, property]) => ({
         key,
@@ -94,10 +72,10 @@ export class DocumentList extends React.Component {
     return (
       <>
         <Helmet>
-          <title>{schema.title}</title>
+          <title>{title}</title>
         </Helmet>
         <Typography variant="h3" component="h1">
-          {schema.title}
+          {title}
         </Typography>
         <Link component={RouterLink} to="/" data-testid="return-to-schema-list">
           Return to Schema List
@@ -124,9 +102,7 @@ export class DocumentList extends React.Component {
                   <TableCell
                     align="right"
                     onClick={() =>
-                      this.props.history.push(
-                        `/document/${schema.id}/${row.id}`
-                      )
+                      this.props.history.push(`/document/${schemaId}/${row.id}`)
                     }
                   >
                     {i + 1}
@@ -136,7 +112,7 @@ export class DocumentList extends React.Component {
                       key={`${row.id}-${column.key}`}
                       onClick={() =>
                         this.props.history.push(
-                          `/document/${schema.id}/${row.id}`
+                          `/document/${schemaId}/${row.id}`
                         )
                       }
                     >
@@ -149,7 +125,7 @@ export class DocumentList extends React.Component {
                       aria-label="edit"
                       onClick={() =>
                         this.props.history.push(
-                          `/document/${schema.id}/${row.id}`
+                          `/document/${schemaId}/${row.id}`
                         )
                       }
                       data-testid={`edit-document-button-${row.id}`}

@@ -21,8 +21,6 @@ export class SchemaEditor extends React.Component {
 
   state = {
     loaded: false,
-    rev: null,
-    schemas: {}, // All of the schemas, needed for saves
     title: "",
     schema: {},
     value: stringify({}),
@@ -35,14 +33,10 @@ export class SchemaEditor extends React.Component {
   }
 
   async componentDidMount() {
-    const { _rev: rev, schemas } = await this.props.db.get("schemas");
-    const id = this.getId();
-    const { title, schema } = schemas[id];
+    const { title, schema } = await this.props.db.getSchema(this.getId());
 
     this.setState({
       loaded: true,
-      rev,
-      schemas,
       title,
       schema,
       value: stringify(schema),
@@ -52,15 +46,10 @@ export class SchemaEditor extends React.Component {
   updateTitle = (event) => {
     const { value: title } = event.target;
 
-    this.setState(
-      {
-        title,
-      },
-      () => this.save()
-    );
+    this.setState({ title }, () => this.save());
   };
 
-  updateSchema = (value, x, y) => {
+  updateSchema = async (value, x, y) => {
     // Update the value even if there are syntax errors
     this.setState({ value });
 
@@ -80,6 +69,8 @@ export class SchemaEditor extends React.Component {
         return;
       }
 
+      await this.save();
+
       // Only update the schema and save it if it is valid
       this.setState(
         {
@@ -94,23 +85,10 @@ export class SchemaEditor extends React.Component {
     }
   };
 
-  save = () => {
+  save = async () => {
     const id = this.getId();
 
-    this.props.db
-      .put({
-        _id: "schemas",
-        _rev: this.state.rev,
-        schemas: {
-          ...this.state.schemas,
-          [id]: {
-            id,
-            title: this.state.title,
-            schema: this.state.schema,
-          },
-        },
-      })
-      .then(({ rev }) => this.setState({ rev }));
+    await this.props.db.saveSchema(id, this.state.title, this.state.schema);
   };
 
   render() {

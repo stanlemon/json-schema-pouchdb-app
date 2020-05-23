@@ -16,28 +16,10 @@ import FolderIcon from "@material-ui/icons/Folder";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import PostAddIcon from "@material-ui/icons/PostAdd";
-import slugify from "slugify";
-import { v4 as uuidv4 } from "uuid";
 import Ajv from "ajv";
 import { Helmet } from "react-helmet";
 import { withSnackbar } from "notistack";
-import dayjs from "dayjs";
 import Spacer from "./Spacer";
-
-const sampleData = {
-  type: "object",
-  required: ["firstName", "lastName"],
-  properties: {
-    firstName: {
-      title: "First Name",
-      type: "string",
-    },
-    lastName: {
-      title: "Last Name",
-      type: "string",
-    },
-  },
-};
 
 const ajv = new Ajv({
   removeAdditional: true,
@@ -49,23 +31,15 @@ export class SchemaList extends React.Component {
     loaded: false,
     title: "",
     schemas: {},
-    rev: null,
   };
 
   reset = async () => {
     try {
-      let doc = await this.props.db.get("schemas");
-
-      doc = await this.props.db.put({
-        _id: "schemas",
-        _rev: doc._rev,
-        schemas: {},
-      });
+      await this.props.db.reset();
 
       this.setState({
         title: "",
         schemas: {},
-        rev: doc.rev,
       });
     } catch (err) {
       console.error(err);
@@ -74,35 +48,15 @@ export class SchemaList extends React.Component {
 
   async componentDidMount() {
     try {
-      const doc = await this.props.db.get("schemas");
-
-      // If something is wrong, reset the database
-      if (!doc.schemas) {
-        await this.reset();
-        return;
-      }
+      const schemas = await this.props.db.getSchemas();
 
       this.setState({
         loaded: true,
-        schemas: doc.schemas,
-        rev: doc._rev,
+        schemas,
       });
-    } catch (err) {
-      if (err.status !== 404) {
-        console.error(status);
-        return;
-      }
-
-      const doc = await this.props.db.put({
-        _id: "schemas",
-        schemas: {},
-      });
-
-      this.setState({
-        loaded: true,
-        schemas: {},
-        rev: doc.rev,
-      });
+    } catch (error) {
+      console.error(error);
+      this.reset();
     }
   }
 
@@ -119,82 +73,43 @@ export class SchemaList extends React.Component {
       return;
     }
 
-    const id = slugify(this.state.title, { lower: true });
-    // Append the new schema
-    const schemas = {
-      ...this.state.schemas,
-      [id]: { id, title: this.state.title, schema: sampleData },
-    };
+    try {
+      await this.props.db.createSchema(this.state.title);
 
-    const doc = await this.props.db.put({
-      _id: "schemas",
-      schemas,
-      // If we have a revision supply it (we won't for the very first schema)
-      ...(this.state.rev ? { _rev: this.state.rev } : {}),
-    });
+      const schemas = await this.props.db.getSchemas();
 
-    this.setState({
-      schemas,
-      title: "",
-      rev: doc.rev,
-    });
+      this.setState({
+        schemas,
+        title: "",
+      });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   deleteSchema = async (id) => {
-    // Append the new schema
-    const { [id]: deleted, ...schemas } = this.state.schemas;
+    try {
+      await this.props.db.deleteSchema(id);
 
-    const doc = await this.props.db.put({
-      _id: "schemas",
-      _rev: this.state.rev,
-      schemas,
-    });
+      const schemas = await this.props.db.getSchemas();
 
-    this.props.enqueueSnackbar("Schema deleted.", { variant: "error" });
+      this.setState({
+        schemas,
+      });
 
-    this.setState({
-      schemas,
-      rev: doc.rev,
-    });
+      this.props.enqueueSnackbar("Schema deleted.", { variant: "error" });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  createDocument = async (id) => {
-    const { schema } = this.state.schemas[id];
-
-    let data = {};
-    ajv.validate(schema, data); // Will fill in defaults
-
-    const now = dayjs().toISOString();
-
-    const row = { id: uuidv4(), ...data, created: now, lastUpdated: now };
-
+  createDocument = async (schemaId) => {
     try {
-      const { _rev, rows } = await this.props.db.get(id);
+      const id = await this.props.db.createDocument(schemaId);
 
-      const doc = await this.props.db.put({
-        _id: id,
-        _rev,
-        rows: [...rows, row],
-      });
-
-      this.props.history.push(`/document/${id}/${row.id}`);
-
-      return doc;
-    } catch (err) {
-      if (err.status !== 404) {
-        console.error(status);
-        return;
-      }
-
-      // Create a new document for our schema
-      const doc = await this.props.db.put({
-        _id: id,
-        rows: [row],
-      });
-
-      this.props.history.push(`/document/${id}/${row.id}`);
-
-      return doc;
+      this.props.history.push(`/document/${schemaId}/${id}`);
+    } catch (error) {
+      console.error(error);
     }
   };
 
