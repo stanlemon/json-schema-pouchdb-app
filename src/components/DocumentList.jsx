@@ -13,10 +13,9 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
-import DeleteIcon from "@material-ui/icons/Delete";
-import EditIcon from "@material-ui/icons/Edit";
 import PostAddIcon from "@material-ui/icons/PostAdd";
 import { withSnackbar } from "notistack";
+import DocumentListItem from "./DocumentListItem";
 
 export class DocumentList extends React.Component {
   state = {
@@ -56,7 +55,7 @@ export class DocumentList extends React.Component {
     }
   };
 
-  async deleteDocument(id) {
+  deleteDocument = async (id) => {
     try {
       await this.props.db.deleteDocument(this.getId(), id);
       const data = await this.props.db.getDocuments(this.getId());
@@ -64,10 +63,10 @@ export class DocumentList extends React.Component {
     } catch (error) {
       console.error(error);
     }
-  }
+  };
 
   render() {
-    const { loaded, data: rows } = this.state;
+    const { loaded, data: items } = this.state;
 
     if (!loaded) {
       return <div />;
@@ -99,7 +98,7 @@ export class DocumentList extends React.Component {
               Return to Schema List
             </Link>
           </Grid>
-          <Grid item xs justify="flex-end" align="right">
+          <Grid item xs align="right">
             <IconButton
               edge="end"
               aria-label="new"
@@ -122,58 +121,14 @@ export class DocumentList extends React.Component {
                 <TableCell />
               </TableRow>
             </TableHead>
-            <TableBody data-testid="document-list-rows">
-              {rows.map((row, i) => (
-                <TableRow
-                  hover={true}
-                  key={row.id}
-                  data-testid={`document-${row.id}`}
-                >
-                  <TableCell
-                    align="right"
-                    onClick={() =>
-                      this.props.history.push(`/document/${schemaId}/${row.id}`)
-                    }
-                  >
-                    {i + 1}
-                  </TableCell>
-                  {columns.map((column) => (
-                    <TableCell
-                      key={`${row.id}-${column.key}`}
-                      onClick={() =>
-                        this.props.history.push(
-                          `/document/${schemaId}/${row.id}`
-                        )
-                      }
-                    >
-                      {row[column.key]}
-                    </TableCell>
-                  ))}
-                  <TableCell align="right">
-                    <IconButton
-                      edge="end"
-                      aria-label="edit"
-                      onClick={() =>
-                        this.props.history.push(
-                          `/document/${schemaId}/${row.id}`
-                        )
-                      }
-                      color="primary"
-                      data-testid={`edit-document-button-${row.id}`}
-                    >
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton
-                      edge="end"
-                      aria-label="delete"
-                      onClick={async () => await this.deleteDocument(row.id)}
-                      color="secondary"
-                      data-testid={`delete-document-button-${row.id}`}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
+            <TableBody data-testid="document-list-items">
+              {items.map((item, index) => (
+                <DocumentListItem
+                  key={index}
+                  schemaId={schemaId}
+                  item={{ index, ...item }}
+                  deleteDocument={this.deleteDocument}
+                />
               ))}
             </TableBody>
           </Table>

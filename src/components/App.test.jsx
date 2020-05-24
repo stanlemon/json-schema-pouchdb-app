@@ -168,10 +168,12 @@ test("e2e", async () => {
 
   // Click the delete button to remove our document
   userEvent.click(getByTestId(`delete-document-button-${documentId}`));
+  await waitFor(() => getByTestId("confirm-button-yes"));
+  userEvent.click(getByTestId("confirm-button-yes"));
   await waitForElementToBeRemoved(getByTestId(`document-${documentId}`));
 
   // All the rows have been removed
-  expect(getByTestId("document-list-rows").childNodes).toHaveLength(0);
+  expect(getByTestId("document-list-items").childNodes).toHaveLength(0);
 
   // Return to the schema list
   userEvent.click(getByTestId("return-to-schema-list"));
@@ -185,6 +187,8 @@ test("e2e", async () => {
 
   // Delete our schema
   userEvent.click(getByTestId(`delete-schema-button-${schemaId}`));
+  await waitFor(() => getByTestId("confirm-button-yes"));
+  userEvent.click(getByTestId("confirm-button-yes"));
 
   await waitForElementToBeRemoved(getByTestId(`schema-${schemaId}`));
 

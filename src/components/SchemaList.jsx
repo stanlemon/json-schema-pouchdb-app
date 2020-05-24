@@ -1,24 +1,15 @@
 import React from "react";
 import { withRouter } from "react-router";
-import { Link } from "react-router-dom";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-import ListItemText from "@material-ui/core/ListItemText";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
-import Avatar from "@material-ui/core/Avatar";
-import IconButton from "@material-ui/core/IconButton";
-import FolderIcon from "@material-ui/icons/Folder";
 import DeleteIcon from "@material-ui/icons/Delete";
-import EditIcon from "@material-ui/icons/Edit";
-import PostAddIcon from "@material-ui/icons/PostAdd";
 import { Helmet } from "react-helmet";
 import { withSnackbar } from "notistack";
 import Spacer from "./Spacer";
+import SchemaListItem from "./SchemaListItem";
 
 export class SchemaList extends React.Component {
   state = {
@@ -81,17 +72,17 @@ export class SchemaList extends React.Component {
     }
   };
 
-  deleteSchema = async (id) => {
+  deleteSchema = async (schemaId) => {
     try {
-      await this.props.db.deleteSchema(id);
+      await this.props.db.deleteSchema(schemaId);
 
       const schemas = await this.props.db.getSchemas();
 
-      this.setState({
-        schemas,
-      });
+      this.setState({ schemas });
 
-      this.props.enqueueSnackbar("Schema deleted.", { variant: "error" });
+      this.props.enqueueSnackbar("Schema deleted.", {
+        variant: "error",
+      });
     } catch (error) {
       console.error(error);
     }
@@ -99,9 +90,9 @@ export class SchemaList extends React.Component {
 
   createDocument = async (schemaId) => {
     try {
-      const id = await this.props.db.createDocument(schemaId);
+      const documentId = await this.props.db.createDocument(schemaId);
 
-      this.props.history.push(`/document/${schemaId}/${id}`);
+      this.props.history.push(`/document/${schemaId}/${documentId}`);
     } catch (error) {
       console.error(error);
     }
@@ -124,54 +115,12 @@ export class SchemaList extends React.Component {
         </Typography>
         <List data-testid="schema-list">
           {Object.values(schemas).map((schema) => (
-            <ListItem
-              button
+            <SchemaListItem
               key={schema.id}
-              component={Link}
-              to={`/document/${schema.id}`}
-              data-testid={`schema-${schema.id}`}
-            >
-              <ListItemAvatar>
-                <Avatar>
-                  <FolderIcon />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText
-                primary={schema.title}
-                data-testid={`document-list-${schema.id}`}
-              />
-              <ListItemSecondaryAction>
-                {/* TODO: Fix this binding */}
-                <IconButton
-                  edge="end"
-                  aria-label="new"
-                  color="default"
-                  onClick={async () => await this.createDocument(schema.id)}
-                  data-testid={`create-document-button-${schema.id}`}
-                >
-                  <PostAddIcon />
-                </IconButton>
-                <IconButton
-                  edge="end"
-                  aria-label="edit"
-                  color="primary"
-                  component={Link}
-                  to={`/schema/${schema.id}`}
-                  data-testid={`edit-schema-button-${schema.id}`}
-                >
-                  <EditIcon />
-                </IconButton>
-                <IconButton
-                  edge="end"
-                  aria-label="delete"
-                  color="secondary"
-                  onClick={async () => await this.deleteSchema(schema.id)}
-                  data-testid={`delete-schema-button-${schema.id}`}
-                >
-                  <DeleteIcon />
-                </IconButton>
-              </ListItemSecondaryAction>
-            </ListItem>
+              {...schema}
+              createDocument={this.createDocument}
+              deleteSchema={this.deleteSchema}
+            />
           ))}
         </List>
         <Grid container spacing={2}>
