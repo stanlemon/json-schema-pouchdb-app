@@ -5,6 +5,7 @@ import { Helmet } from "react-helmet";
 import Typography from "@material-ui/core/Typography";
 import Link from "@material-ui/core/Link";
 import IconButton from "@material-ui/core/IconButton";
+import Grid from "@material-ui/core/Grid";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -14,6 +15,7 @@ import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
+import PostAddIcon from "@material-ui/icons/PostAdd";
 import { withSnackbar } from "notistack";
 import Spacer from "./Spacer";
 
@@ -43,6 +45,17 @@ export class DocumentList extends React.Component {
       console.error(error);
     }
   }
+
+  createDocument = async () => {
+    try {
+      const schemaId = this.getId();
+      const id = await this.props.db.createDocument(schemaId);
+
+      this.props.history.push(`/document/${schemaId}/${id}`);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   async deleteDocument(id) {
     try {
@@ -77,10 +90,28 @@ export class DocumentList extends React.Component {
         <Typography variant="h3" component="h1">
           {title}
         </Typography>
-        <Link component={RouterLink} to="/" data-testid="return-to-schema-list">
-          Return to Schema List
-        </Link>
-        <Spacer />
+        <Grid container alignItems="baseline">
+          <Grid item xs>
+            <Link
+              component={RouterLink}
+              to="/"
+              data-testid="return-to-schema-list"
+            >
+              Return to Schema List
+            </Link>
+          </Grid>
+          <Grid item xs justify="flex-end" align="right">
+            <IconButton
+              edge="end"
+              aria-label="new"
+              color="default"
+              onClick={this.createDocument}
+              data-testid={`create-document-button-${schema.id}`}
+            >
+              <PostAddIcon />
+            </IconButton>
+          </Grid>
+        </Grid>
         <TableContainer component={Paper}>
           <Table size="small" data-testid="document-list">
             <TableHead>
@@ -128,6 +159,7 @@ export class DocumentList extends React.Component {
                           `/document/${schemaId}/${row.id}`
                         )
                       }
+                      color="primary"
                       data-testid={`edit-document-button-${row.id}`}
                     >
                       <EditIcon />

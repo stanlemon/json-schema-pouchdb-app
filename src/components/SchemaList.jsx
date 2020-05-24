@@ -145,6 +145,7 @@ export class SchemaList extends React.Component {
                 <IconButton
                   edge="end"
                   aria-label="new"
+                  color="default"
                   onClick={async () => await this.createDocument(schema.id)}
                   data-testid={`create-document-button-${schema.id}`}
                 >
@@ -153,9 +154,9 @@ export class SchemaList extends React.Component {
                 <IconButton
                   edge="end"
                   aria-label="edit"
+                  color="primary"
                   component={Link}
                   to={`/schema/${schema.id}`}
-                  color="secondary"
                   data-testid={`edit-schema-button-${schema.id}`}
                 >
                   <EditIcon />
@@ -163,6 +164,7 @@ export class SchemaList extends React.Component {
                 <IconButton
                   edge="end"
                   aria-label="delete"
+                  color="secondary"
                   onClick={async () => await this.deleteSchema(schema.id)}
                   data-testid={`delete-schema-button-${schema.id}`}
                 >
