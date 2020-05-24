@@ -80,14 +80,15 @@ export class DocumentEditor extends React.Component {
         <Typography variant="h3" component="h1">
           {schema.title}
         </Typography>
-        <Link
-          component={RouterLink}
-          to={`/document/${schema.id}`}
-          data-testid="return-to-document-list"
-        >
-          Return to Document List
-        </Link>
-        <Spacer />
+        <p>
+          <Link
+            component={RouterLink}
+            to={`/document/${schema.id}`}
+            data-testid="return-to-document-list"
+          >
+            Return to Document List
+          </Link>
+        </p>
         <Form
           schema={schema.schema}
           formData={data}
@@ -109,6 +110,7 @@ export class DocumentEditor extends React.Component {
           <div>Created: {data.created}</div>
           <div>Last Updated: {data.lastUpdated}</div>
         </div>
+        <Spacer />
       </>
     );
   }

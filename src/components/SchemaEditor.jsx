@@ -95,26 +95,27 @@ export class SchemaEditor extends React.Component {
         <Typography variant="h3" component="h1">
           Edit {title}
         </Typography>
-        <Link component={RouterLink} to="/" data-testid="return-to-schema-list">
-          Return to Schema List
-        </Link>
-        <Spacer />
+        <p>
+          <Link
+            component={RouterLink}
+            to="/"
+            data-testid="return-to-schema-list"
+          >
+            Return to Schema List
+          </Link>
+        </p>
         <Grid container spacing={2}>
           <Grid item xs>
-            <Grid container>
-              <Grid item xs>
-                <TextField
-                  fullWidth
-                  id="schema-name"
-                  label="Schema Name"
-                  onChange={this.updateTitle}
-                  value={title}
-                  size="small"
-                  variant="outlined"
-                  data-testid="schema-name"
-                />
-              </Grid>
-            </Grid>
+            <TextField
+              fullWidth
+              id="schema-name"
+              label="Schema Name"
+              onChange={this.updateTitle}
+              value={title}
+              size="small"
+              variant="outlined"
+              data-testid="schema-name"
+            />
 
             <Spacer />
 
@@ -150,6 +151,7 @@ export class SchemaEditor extends React.Component {
             </Form>
           </Grid>
         </Grid>
+        <Spacer />
       </>
     );
   }

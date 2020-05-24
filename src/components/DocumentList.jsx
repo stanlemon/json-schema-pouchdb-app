@@ -17,7 +17,6 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import PostAddIcon from "@material-ui/icons/PostAdd";
 import { withSnackbar } from "notistack";
-import Spacer from "./Spacer";
 
 export class DocumentList extends React.Component {
   state = {
