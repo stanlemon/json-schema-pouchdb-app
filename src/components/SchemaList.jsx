@@ -9,6 +9,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import { Helmet } from "react-helmet";
 import { withSnackbar } from "notistack";
 import Spacer from "./Spacer";
+import ConfirmButton from "./ConfirmButton";
 import SchemaListItem from "./SchemaListItem";
 
 export class SchemaList extends React.Component {
@@ -150,16 +151,18 @@ export class SchemaList extends React.Component {
             </Button>
           </Grid>
         </Grid>
-        <Spacer />
-        <Button
+        <Spacer height={2} />
+        <ConfirmButton
+          title="Reset Database"
+          description="Are you sure you want to reset your database? All of your schemas and their documents will be deleted and this action is permanent."
           variant="contained"
           color="secondary"
           startIcon={<DeleteIcon />}
-          onClick={this.reset}
+          onConfirm={this.reset}
           data-testid="reset-all-schemas"
         >
-          Reset All Schemas
-        </Button>
+          Reset Database
+        </ConfirmButton>
       </>
     );
   }
