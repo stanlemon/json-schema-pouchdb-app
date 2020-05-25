@@ -10,7 +10,7 @@ module.exports = {
   mode: env || "development",
   devtool: env === "production" ? "source-map" : "inline-source-map",
   output: {
-    path: path.resolve(__dirname, "dist" + publicPath),
+    path: path.resolve(__dirname, "dist"),
     publicPath,
   },
   devServer: {
