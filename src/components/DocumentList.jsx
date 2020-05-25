@@ -12,6 +12,7 @@ import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
+import Tooltip from "@material-ui/core/Tooltip";
 import Typography from "@material-ui/core/Typography";
 import PostAddIcon from "@material-ui/icons/PostAdd";
 import { withSnackbar } from "notistack";
@@ -99,19 +100,21 @@ export class DocumentList extends React.Component {
             </Link>
           </Grid>
           <Grid item xs align="right">
-            <IconButton
-              edge="end"
-              aria-label="new"
-              color="default"
-              onClick={this.createDocument}
-              data-testid={`create-document-button-${schema.id}`}
-            >
-              <PostAddIcon />
-            </IconButton>
+            <Tooltip title="Create Document">
+              <IconButton
+                edge="end"
+                aria-label="new"
+                color="default"
+                onClick={this.createDocument}
+                data-testid={`create-document-button-${schema.id}`}
+              >
+                <PostAddIcon />
+              </IconButton>
+            </Tooltip>
           </Grid>
         </Grid>
         {items.length === 0 && (
-          <Typography align="center">
+          <Typography align="center" data-testid="document-list-empty">
             <em>
               You haven't created any documents yet. Click the button to the
               upper right to get started.

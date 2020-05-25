@@ -153,7 +153,7 @@ export class SchemaList extends React.Component {
         </Grid>
         <Spacer height={2} />
         <ConfirmButton
-          title="Reset Database"
+          message="Reset Database"
           description="Are you sure you want to reset your database? All of your schemas and their documents will be deleted and this action is permanent."
           variant="contained"
           color="secondary"

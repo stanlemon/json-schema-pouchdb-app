@@ -173,7 +173,7 @@ test("e2e", async () => {
   await waitForElementToBeRemoved(getByTestId(`document-${documentId}`));
 
   // All the rows have been removed
-  expect(getByTestId("document-list-items").childNodes).toHaveLength(0);
+  expect(getByTestId("document-list-empty")).toBeInTheDocument();
 
   // Return to the schema list
   userEvent.click(getByTestId("return-to-schema-list"));

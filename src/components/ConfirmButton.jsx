@@ -6,68 +6,80 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 
-export default function ConfirmButton({
-  component = Button,
-  children,
-  title,
-  description,
-  onConfirm,
-  ...props
-}) {
-  const [isOpen, setOpen] = useState(false);
-
-  const open = () => {
-    setOpen(true);
+export default class ConfirmButton extends React.Component {
+  state = {
+    isOpen: false,
   };
 
-  const close = () => {
-    setOpen(false);
-  };
+  setOpen(isOpen) {
+    this.setState({ isOpen });
+  }
 
-  const confirm = () => {
-    setOpen(false);
-    onConfirm();
-  };
+  render() {
+    const {
+      component = Button,
+      children,
+      message,
+      description,
+      onConfirm,
+      ...props
+    } = this.props;
 
-  return (
-    <>
-      {React.createElement(component, {
-        ...props,
-        children,
-        onClick: open,
-      })}
-      {isOpen && (
-        <Dialog
-          open={isOpen}
-          onClose={close}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              {description}
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button
-              data-testid="confirm-button-no"
-              onClick={close}
-              color="primary"
-            >
-              No
-            </Button>
-            <Button
-              data-testid="confirm-button-yes"
-              onClick={confirm}
-              color="primary"
-              autoFocus
-            >
-              Yes
-            </Button>
-          </DialogActions>
-        </Dialog>
-      )}
-    </>
-  );
+    const open = () => {
+      this.setOpen(true);
+    };
+
+    const close = () => {
+      this.setOpen(false);
+    };
+
+    const confirm = () => {
+      this.setOpen(false);
+      onConfirm();
+    };
+
+    const { isOpen } = this.state;
+
+    return (
+      <>
+        {React.createElement(component, {
+          ...props,
+          children,
+          onClick: open,
+        })}
+        {isOpen && (
+          <Dialog
+            open={isOpen}
+            onClose={close}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <DialogTitle id="alert-dialog-title">{message}</DialogTitle>
+            <DialogContent>
+              <DialogContentText id="alert-dialog-description">
+                {description}
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                data-testid="confirm-button-no"
+                onClick={close}
+                color="primary"
+              >
+                No
+              </Button>
+              <Button
+                data-testid="confirm-button-yes"
+                onClick={confirm}
+                color="primary"
+                autoFocus
+              >
+                Yes
+              </Button>
+            </DialogActions>
+          </Dialog>
+        )}
+      </>
+    );
+  }
 }
