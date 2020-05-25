@@ -2,17 +2,17 @@ import React from "react";
 import { withRouter } from "react-router";
 import { Link as RouterLink } from "react-router-dom";
 import { Helmet } from "react-helmet";
-import Typography from "@material-ui/core/Typography";
 import Link from "@material-ui/core/Link";
 import IconButton from "@material-ui/core/IconButton";
 import Grid from "@material-ui/core/Grid";
+import Paper from "@material-ui/core/Paper";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
-import Paper from "@material-ui/core/Paper";
+import Typography from "@material-ui/core/Typography";
 import PostAddIcon from "@material-ui/icons/PostAdd";
 import { withSnackbar } from "notistack";
 import DocumentListItem from "./DocumentListItem";
@@ -110,29 +110,39 @@ export class DocumentList extends React.Component {
             </IconButton>
           </Grid>
         </Grid>
-        <TableContainer component={Paper}>
-          <Table size="small" data-testid="document-list">
-            <TableHead>
-              <TableRow>
-                <TableCell></TableCell>
-                {columns.map((column) => (
-                  <TableCell key={column.key}>{column.label}</TableCell>
+        {items.length === 0 && (
+          <Typography align="center">
+            <em>
+              You haven't created any documents yet. Click the button to the
+              upper right to get started.
+            </em>
+          </Typography>
+        )}
+        {items.length > 0 && (
+          <TableContainer component={Paper}>
+            <Table size="small" data-testid="document-list">
+              <TableHead>
+                <TableRow>
+                  <TableCell></TableCell>
+                  {columns.map((column) => (
+                    <TableCell key={column.key}>{column.label}</TableCell>
+                  ))}
+                  <TableCell />
+                </TableRow>
+              </TableHead>
+              <TableBody data-testid="document-list-items">
+                {items.map((item, index) => (
+                  <DocumentListItem
+                    key={index}
+                    schemaId={schemaId}
+                    item={{ index, ...item }}
+                    deleteDocument={this.deleteDocument}
+                  />
                 ))}
-                <TableCell />
-              </TableRow>
-            </TableHead>
-            <TableBody data-testid="document-list-items">
-              {items.map((item, index) => (
-                <DocumentListItem
-                  key={index}
-                  schemaId={schemaId}
-                  item={{ index, ...item }}
-                  deleteDocument={this.deleteDocument}
-                />
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
       </>
     );
   }
