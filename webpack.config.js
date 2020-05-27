@@ -2,13 +2,15 @@ const webpack = require("webpack");
 const path = require("path");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const HtmlWebPackPlugin = require("html-webpack-plugin");
+const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 
 const env = process.env.NODE_ENV;
 const publicPath = process.env.PUBLIC_PATH || "/";
+const isProduction = env === "production";
 
 module.exports = {
   mode: env || "development",
-  devtool: env === "production" ? "source-map" : "inline-source-map",
+  devtool: isProduction ? "source-map" : "inline-source-map",
   output: {
     path: path.resolve(__dirname, "dist"),
     publicPath,
@@ -47,7 +49,7 @@ module.exports = {
   },
   resolve: {
     extensions: [".js", ".jsx", ".ts", ".tsx"],
-    alias: { "react-dom": "@hot-loader/react-dom" },
+    alias: isProduction ? {} : { "react-dom": "@hot-loader/react-dom" },
   },
   plugins: [
     new CleanWebpackPlugin(),
@@ -58,6 +60,7 @@ module.exports = {
     new webpack.DefinePlugin({
       PUBLIC_PATH: JSON.stringify(publicPath),
     }),
+    new BundleAnalyzerPlugin(),
   ],
   optimization: {
     usedExports: true,
