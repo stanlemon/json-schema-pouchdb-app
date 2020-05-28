@@ -53,7 +53,7 @@ module.exports = {
     alias: isProduction ? {} : { "react-dom": "@hot-loader/react-dom" },
   },
   performance: {
-    hints: isProduction,
+    hints: isProduction ? "warning" : false, // Don't emit hints while running the dev server
     maxEntrypointSize: 600000,
   },
   plugins: [
