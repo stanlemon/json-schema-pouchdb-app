@@ -3,6 +3,7 @@ const path = require("path");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const HtmlWebPackPlugin = require("html-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
+const LodashModuleReplacementPlugin = require("lodash-webpack-plugin");
 
 const env = process.env.NODE_ENV;
 const publicPath = process.env.PUBLIC_PATH || "/";
@@ -60,6 +61,7 @@ module.exports = {
     new webpack.DefinePlugin({
       PUBLIC_PATH: JSON.stringify(publicPath),
     }),
+    new LodashModuleReplacementPlugin(),
     new BundleAnalyzerPlugin(),
   ],
   optimization: {
@@ -68,7 +70,7 @@ module.exports = {
     splitChunks: {
       cacheGroups: {
         vendor: {
-          test: /[\\/]node_modules[\\/](react|react-dom|react-hot-loader|react-router|react-router-dom|pouchdb|@material-ui|notistack|@loadable|typeface-roboto|slugify|uuid)[\\/]/,
+          test: /[\\/]node_modules[\\/](react|react-dom|react-hot-loader|react-router|react-router-dom|pouchdb|@material-ui|notistack|popper\.js|@loadable|typeface-roboto|slugify|uuid)[\\/]/,
           name: "vendor",
           chunks: "all",
         },

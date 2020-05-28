@@ -9,6 +9,7 @@
   ],
   "plugins": [
     "@babel/plugin-proposal-optional-chaining",
-    "react-hot-loader/babel"
+    "react-hot-loader/babel",
+    "transform-react-remove-prop-types"
   ]
 }
