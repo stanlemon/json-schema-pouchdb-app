@@ -52,6 +52,10 @@ module.exports = {
     extensions: [".js", ".jsx", ".ts", ".tsx"],
     alias: isProduction ? {} : { "react-dom": "@hot-loader/react-dom" },
   },
+  performance: {
+    hints: isProduction,
+    maxEntrypointSize: 600000,
+  },
   plugins: [
     new CleanWebpackPlugin(),
     new HtmlWebPackPlugin({
