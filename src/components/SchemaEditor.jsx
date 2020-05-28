@@ -11,8 +11,8 @@ import Typography from "@material-ui/core/Typography";
 import Alert from "@material-ui/lab/Alert";
 import { withRouter } from "react-router";
 import { Link as RouterLink } from "react-router-dom";
-import { Helmet } from "react-helmet";
 import Spacer from "./Spacer";
+import DocumentTitle from "./DocumentTitle";
 import stringify from "../util/stringify";
 
 export class SchemaEditor extends React.Component {
@@ -89,9 +89,7 @@ export class SchemaEditor extends React.Component {
 
     return (
       <>
-        <Helmet>
-          <title>{`Edit ${title}`}</title>
-        </Helmet>
+        <DocumentTitle title={`Edit ${title}`} />
         <Typography variant="h3" component="h1">
           Edit {title}
         </Typography>

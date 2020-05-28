@@ -1,7 +1,6 @@
 import React from "react";
 import { withRouter } from "react-router";
 import { Link as RouterLink } from "react-router-dom";
-import { Helmet } from "react-helmet";
 import Link from "@material-ui/core/Link";
 import IconButton from "@material-ui/core/IconButton";
 import Grid from "@material-ui/core/Grid";
@@ -16,6 +15,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import Typography from "@material-ui/core/Typography";
 import PostAddIcon from "@material-ui/icons/PostAdd";
 import { withSnackbar } from "notistack";
+import DocumentTitle from "./DocumentTitle";
 import DocumentListItem from "./DocumentListItem";
 
 export class DocumentList extends React.Component {
@@ -83,9 +83,7 @@ export class DocumentList extends React.Component {
 
     return (
       <>
-        <Helmet>
-          <title>{title}</title>
-        </Helmet>
+        <DocumentTitle title={title} />
         <Typography variant="h3" component="h1">
           {title}
         </Typography>

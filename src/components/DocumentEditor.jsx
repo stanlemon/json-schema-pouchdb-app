@@ -1,12 +1,12 @@
 import React from "react";
 import { withRouter } from "react-router";
 import { Link as RouterLink } from "react-router-dom";
-import { Helmet } from "react-helmet";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import Link from "@material-ui/core/Link";
 import Form from "@rjsf/material-ui";
 import { withSnackbar } from "notistack";
+import DocumentTitle from "./DocumentTitle";
 import Spacer from "./Spacer";
 
 export class DocumentEditor extends React.Component {
@@ -74,9 +74,7 @@ export class DocumentEditor extends React.Component {
 
     return (
       <>
-        <Helmet>
-          <title>{schema.title}</title>
-        </Helmet>
+        <DocumentTitle title={schema.title} />
         <Typography variant="h3" component="h1">
           {schema.title}
         </Typography>

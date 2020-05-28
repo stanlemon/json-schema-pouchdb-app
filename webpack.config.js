@@ -68,7 +68,7 @@ module.exports = {
     splitChunks: {
       cacheGroups: {
         vendor: {
-          test: /[\\/]node_modules[\\/](react|react-dom|react-hot-loader|react-router|react-router-dom|react-helmet|pouchdb|@material-ui|notistack|@loadable|typeface-roboto|slugify|uuid|dayjs)[\\/]/,
+          test: /[\\/]node_modules[\\/](react|react-dom|react-hot-loader|react-router|react-router-dom|pouchdb|@material-ui|notistack|@loadable|typeface-roboto|slugify|uuid|dayjs)[\\/]/,
           name: "vendor",
           chunks: "all",
         },

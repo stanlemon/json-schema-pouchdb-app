@@ -6,9 +6,9 @@ import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import List from "@material-ui/core/List";
 import DeleteIcon from "@material-ui/icons/Delete";
-import { Helmet } from "react-helmet";
 import { withSnackbar } from "notistack";
 import Spacer from "./Spacer";
+import DocumentTitle from "./DocumentTitle";
 import ConfirmButton from "./ConfirmButton";
 import SchemaListItem from "./SchemaListItem";
 
@@ -108,9 +108,7 @@ export class SchemaList extends React.Component {
 
     return (
       <>
-        <Helmet>
-          <title>Schemas</title>
-        </Helmet>
+        <DocumentTitle title="Schemas" />
         <Typography variant="h3" component="h1">
           Schemas
         </Typography>
