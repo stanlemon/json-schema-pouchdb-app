@@ -1,12 +1,9 @@
 import "isomorphic-fetch";
 import PouchDB from "pouchdb";
-import dayjs from "dayjs";
-import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+import { parseISO, isBefore } from "date-fns";
 import Database from "./Database";
 
 PouchDB.plugin(require("pouchdb-adapter-memory"));
-
-dayjs.extend(isSameOrBefore);
 
 // Create a database instance in memory only
 const pouchDb = new PouchDB("test", {
@@ -77,7 +74,7 @@ describe("database operations", () => {
     expect(all).toEqual({});
   });
 
-  const now = dayjs();
+  const now = new Date();
 
   it("create, update and delete a document", async () => {
     const documentName = "my-test-document-id";
@@ -93,9 +90,9 @@ describe("database operations", () => {
 
     expect(document).toMatchObject(data);
     expect(document.created).not.toBeNull();
-    expect(now.isSameOrBefore(document.created)).toBe(true);
+    expect(isBefore(parseISO(document.created), now)).toBe(true);
     expect(document.lastUpdated).not.toBeNull();
-    expect(now.isSameOrBefore(document.lastUpdated)).toBe(true);
+    expect(isBefore(parseISO(document.lastUpdated), now)).toBe(true);
 
     data = {
       ...data,
@@ -109,7 +106,9 @@ describe("database operations", () => {
 
     expect(document).toMatchObject(data);
     expect(document.created).toEqual(original.created);
-    expect(dayjs(original.lastUpdated).isSameOrBefore(document.lastUpdated));
+    expect(
+      isBefore(parseISO(original.lastUpdated), parseISO(document.lastUpdated))
+    );
 
     await db.createDocument(documentName, "random-document-id", {
       test: "test",

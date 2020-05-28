@@ -1,5 +1,5 @@
 import PouchDB from "pouchdb";
-import dayjs from "dayjs";
+import { formatISO } from "date-fns";
 import slugify from "slugify";
 import { v4 as uuidv4 } from "uuid";
 
@@ -118,7 +118,7 @@ export default class Database {
   async createDocument(name, data = {}) {
     const { rev, rows } = await this.#fetchDocuments(name);
 
-    const now = dayjs().toISOString();
+    const now = formatISO(new Date());
 
     const row = {
       id: uuidv4(),
@@ -135,7 +135,7 @@ export default class Database {
   async saveDocument(name, id, row) {
     const { rows, rev } = await this.#fetchDocuments(name);
 
-    const now = dayjs().toISOString();
+    const now = formatISO(new Date());
     let data;
 
     await this.#storeDocuments(
