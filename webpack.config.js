@@ -8,6 +8,7 @@ const LodashModuleReplacementPlugin = require("lodash-webpack-plugin");
 const env = process.env.NODE_ENV;
 const publicPath = process.env.PUBLIC_PATH || "/";
 const isProduction = env === "production";
+const isAnalyzer = !isProduction;
 
 module.exports = {
   mode: env || "development",
@@ -66,7 +67,7 @@ module.exports = {
       PUBLIC_PATH: JSON.stringify(publicPath),
     }),
     new LodashModuleReplacementPlugin(),
-    new BundleAnalyzerPlugin(),
+    ...(isAnalyzer ? [new BundleAnalyzerPlugin()] : []),
   ],
   optimization: {
     usedExports: true,
