@@ -50,7 +50,7 @@
     "@rjsf/material-ui": "^2.0.1",
     "ace-builds": "^1.4.11",
     "date-fns": "^2.14.0",
-    "notistack": "^0.9.16",
+    "notistack": "^0.9.17",
     "pouchdb": "^7.2.1",
     "react": "^16.13.1",
     "react-ace": "^9.1.1",
