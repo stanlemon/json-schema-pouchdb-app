@@ -48,7 +48,7 @@
     "@material-ui/lab": "^4.0.0-alpha.56",
     "@rjsf/core": "^2.0.1",
     "@rjsf/material-ui": "^2.0.1",
-    "ace-builds": "^1.4.11",
+    "ace-builds": "^1.4.12",
     "date-fns": "^2.14.0",
     "notistack": "^0.9.17",
     "pouchdb": "^7.2.1",
