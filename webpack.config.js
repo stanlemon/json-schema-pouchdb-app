@@ -2,13 +2,11 @@ const webpack = require("webpack");
 const path = require("path");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const HtmlWebPackPlugin = require("html-webpack-plugin");
-const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const LodashModuleReplacementPlugin = require("lodash-webpack-plugin");
 
 const env = process.env.NODE_ENV;
 const publicPath = process.env.PUBLIC_PATH || "/";
 const isProduction = env === "production";
-const isAnalyzer = !isProduction;
 
 module.exports = {
   mode: env || "development",
@@ -23,6 +21,12 @@ module.exports = {
   },
   module: {
     rules: [
+      {
+        test: /\.m?js/,
+        resolve: {
+          fullySpecified: false,
+        },
+      },
       {
         test: /\.(j|t)(s|sx)$/,
         exclude: /node_modules/,
@@ -67,7 +71,6 @@ module.exports = {
       PUBLIC_PATH: JSON.stringify(publicPath),
     }),
     new LodashModuleReplacementPlugin(),
-    ...(isAnalyzer ? [new BundleAnalyzerPlugin()] : []),
   ],
   optimization: {
     usedExports: true,

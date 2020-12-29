@@ -3,7 +3,8 @@
     "@babel/preset-react", 
     ["@babel/preset-env", {
       "bugfixes": true,
-      "useBuiltIns": false,
+      "useBuiltIns": "usage",
+      "corejs": "2.6.12",
       "shippedProposals": true
     }]
   ],

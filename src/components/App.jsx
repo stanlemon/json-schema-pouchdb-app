@@ -1,7 +1,8 @@
+import "@babel/polyfill";
 import React from "react";
 import { hot } from "react-hot-loader/root";
 import loadable from "@loadable/component";
-import { Switch, Route, Link } from "react-router-dom";
+import { Switch, Route } from "react-router-dom";
 import { SnackbarProvider } from "notistack";
 import Container from "@material-ui/core/Container";
 import CssBaseline from "@material-ui/core/CssBaseline";

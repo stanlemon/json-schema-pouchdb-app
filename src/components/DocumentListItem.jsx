@@ -8,7 +8,13 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import ConfirmButton from "./ConfirmButton";
 
-export function DocumentListItem({ history, schemaId, item, deleteDocument }) {
+export function DocumentListItem({
+  history,
+  schemaId,
+  columns,
+  item,
+  deleteDocument,
+}) {
   const { id: documentId, index, lastUpdated, created, ...data } = item;
   const deleteDocumentHandler = () => deleteDocument(documentId);
 
@@ -25,12 +31,12 @@ export function DocumentListItem({ history, schemaId, item, deleteDocument }) {
       >
         {index + 1}
       </TableCell>
-      {Object.keys(data).map((key) => (
+      {columns.map(({ key }) => (
         <TableCell
           key={`${documentId}-${key}`}
           onClick={() => history.push(`/document/${schemaId}/${documentId}`)}
         >
-          {data[key]}
+          {toString(data[key])}
         </TableCell>
       ))}
       <TableCell align="right">
@@ -62,6 +68,23 @@ export function DocumentListItem({ history, schemaId, item, deleteDocument }) {
       </TableCell>
     </TableRow>
   );
+}
+
+function toString(value) {
+  console.log(value);
+  if (value === undefined || value === null) {
+    return "";
+  } else if (typeof value === "string") {
+    return value;
+  } else if (typeof value === "boolean") {
+    return value ? "true" : "false";
+  } else if (Array.isArray(value)) {
+    return value.map(toString);
+  } else if (Object.keys(value).length > 0) {
+    return Object.values(value).join(", ");
+  } else {
+    return "";
+  }
 }
 
 export default withRouter(DocumentListItem);

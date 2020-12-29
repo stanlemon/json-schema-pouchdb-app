@@ -136,6 +136,7 @@ export class DocumentList extends React.Component {
                   <DocumentListItem
                     key={index}
                     schemaId={schemaId}
+                    columns={columns}
                     item={{ index, ...item }}
                     deleteDocument={this.deleteDocument}
                   />
