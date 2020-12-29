@@ -71,7 +71,6 @@ export function DocumentListItem({
 }
 
 function toString(value) {
-  console.log(value);
   if (value === undefined || value === null) {
     return "";
   } else if (typeof value === "string") {
